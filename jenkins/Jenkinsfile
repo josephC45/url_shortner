@@ -3,7 +3,7 @@ pipeline {
     stages {
         stage('Checkout'){
             steps {
-                git clone 'https://github.com/josephC45/url_shortner.git'
+                git 'https://github.com/josephC45/url_shortner.git'
             }
         }
         stage('Build'){
