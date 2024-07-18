@@ -12,11 +12,11 @@ public class KeyCreatorImpl implements KeyCreator {
 
     private ConfigProp configProp;
 
-    public KeyCreatorImpl(ConfigProp configProp){
+    private KeyCreatorImpl(ConfigProp configProp){
         this.configProp = configProp;
     }
 
-    public long getCurrentDateTimeOffset(){
+    private long getCurrentDateTimeOffset(){
         return Instant.now().toEpochMilli();
     }
     
@@ -24,11 +24,16 @@ public class KeyCreatorImpl implements KeyCreator {
         StringBuilder resultantHash = new StringBuilder();
         long curTime = getCurrentDateTimeOffset();
         while(curTime > 0){
-            int temp = (int)(curTime % configProp.getBaseConversion());
-            char numToChar = (char)(temp + '0');
+            int remainder = (int)(curTime % 62);
+            char numToChar;
+
+            if(remainder < 10) numToChar = (char)(remainder + '0');
+            else if(remainder < 36) numToChar = (char)('a' + remainder - 10);
+            else numToChar = (char)('A' + remainder - 36);
+
             resultantHash.append(numToChar);
             curTime /= configProp.getBaseConversion();
         }
-        return resultantHash.toString();
+        return resultantHash.reverse().toString();
     }
 }
