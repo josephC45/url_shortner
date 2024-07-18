@@ -39,8 +39,8 @@ public class UrlAssemblerTests {
         Url actual = urlAssembler.assembleUrl("http://localhost:8080/abc1234567");
 
         //assert
-        assertEquals(expectedUrl.getUrlHash(), actual.getUrlHash());
-        assertEquals(expectedUrl.getShortUrl(), actual.getShortUrl());
-        assertEquals(expectedUrl.getLongUrl(), actual.getLongUrl());
+        assertEquals(expectedUrl.getUrlHash(), actual.getUrlHash(), "Expected url and actual url should match");
+        assertEquals(expectedUrl.getShortUrl(), actual.getShortUrl(), "Expected shorturl and actual shorturl should match");
+        assertEquals(expectedUrl.getLongUrl(), actual.getLongUrl(), "Expected longurl and shorturl should match");
     }
 }
