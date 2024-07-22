@@ -14,8 +14,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.SpringBootApp.UrlShortner.entity.Url;
-import com.SpringBootApp.UrlShortner.exception.UrlNotFoundException;
 import com.SpringBootApp.UrlShortner.service.UrlService;
+
+// TODO: Add testing for exception handling to make sure exception handling is functioning as intended.
 
 @RestController
 @RequestMapping("/api/v1/urls")
@@ -30,13 +31,8 @@ public class MyRestController {
     @GetMapping
     public ResponseEntity<String> getUrl(@RequestParam String shortUrl){
         String decodedShortUrl = urlService.handleDecoding(shortUrl);
-        try{
-            String longUrl = urlService.getUrl(decodedShortUrl);
-            return new ResponseEntity<>(longUrl, HttpStatus.OK);
-        
-        }catch(UrlNotFoundException ex){
-            return new ResponseEntity<>("URL not found", HttpStatus.NOT_FOUND);
-        }
+        String longUrl = urlService.getUrl(decodedShortUrl);
+        return new ResponseEntity<>(longUrl, HttpStatus.OK);
     }
 
     @PostMapping
@@ -50,11 +46,7 @@ public class MyRestController {
     @DeleteMapping
     public ResponseEntity<String> deleteUrl(@RequestParam String shortUrl){
         String decodedShortUrl = urlService.handleDecoding(shortUrl);
-        try{
-            urlService.deleteUrl(decodedShortUrl);
-            return ResponseEntity.noContent().build();
-        }catch(UrlNotFoundException ex){
-            return new ResponseEntity<>("URL not found", HttpStatus.NOT_FOUND);
-        }
+        urlService.deleteUrl(decodedShortUrl);
+        return ResponseEntity.noContent().build();
     }
 }

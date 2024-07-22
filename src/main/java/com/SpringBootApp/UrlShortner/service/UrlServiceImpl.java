@@ -51,7 +51,7 @@ public class UrlServiceImpl implements UrlService {
                 urlRepository.deleteById(urlEntity.getId());
             }, 
             () -> {
-                throw new UrlNotFoundException("URL was not found with the short url of: " + shortenedUrl);
+                throw new UrlNotFoundException("URL was not found associated with: " + shortenedUrl);
             }
         );
     }
