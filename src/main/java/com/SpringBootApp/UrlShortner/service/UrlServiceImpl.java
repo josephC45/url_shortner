@@ -2,10 +2,12 @@ package com.SpringBootApp.UrlShortner.service;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
 import com.SpringBootApp.UrlShortner.entity.Url;
+import com.SpringBootApp.UrlShortner.exception.UrlNotFoundException;
 import com.SpringBootApp.UrlShortner.repository.UrlRepository;
 
 @Service
@@ -26,24 +28,32 @@ public class UrlServiceImpl implements UrlService {
     }
 
     @Override
-    public String getUrl(String shortUrl) {
-        Url url = urlRepository.findByShortUrl(shortUrl);
-        return (url != null) ? url.getLongUrl() : null;
+    public String getUrl(String shortUrl) throws UrlNotFoundException {
+        Optional<Url> url = urlRepository.findByShortUrl(shortUrl);
+        return url.map(Url::getLongUrl).orElseThrow(() -> new UrlNotFoundException("URL was not found associated with: " + shortUrl));
     }
 
     @Override
     public Url createUrl(String longUrl) {
-        if(urlRepository.findByLongUrl(longUrl) == null) {
+        Optional<Url> url = urlRepository.findByLongUrl(longUrl);
+        if(!url.isPresent()){
             Url newlyCreatedUrl = urlAssembler.assembleUrl(longUrl);
             return urlRepository.save(newlyCreatedUrl);
         }
-        return urlRepository.findByLongUrl(longUrl);
+        return url.get();
     }
 
     @Override
-    public void deleteUrl(String shortenedUrl) {
-        Url url = urlRepository.findByShortUrl(shortenedUrl);
-        urlRepository.deleteById(url.getId());
+    public void deleteUrl(String shortenedUrl) throws UrlNotFoundException {
+        Optional<Url> url = urlRepository.findByShortUrl(shortenedUrl);
+        url.ifPresentOrElse(
+            urlEntity -> {
+                urlRepository.deleteById(urlEntity.getId());
+            }, 
+            () -> {
+                throw new UrlNotFoundException("URL was not found with the short url of: " + shortenedUrl);
+            }
+        );
     }
 
 }
