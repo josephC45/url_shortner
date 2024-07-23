@@ -16,8 +16,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import com.SpringBootApp.UrlShortner.entity.Url;
 import com.SpringBootApp.UrlShortner.service.UrlService;
 
-// TODO: Add testing for exception handling to make sure exception handling is functioning as intended.
-
 @RestController
 @RequestMapping("/api/v1/urls")
 public class MyRestController {

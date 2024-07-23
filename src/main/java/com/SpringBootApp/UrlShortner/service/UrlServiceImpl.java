@@ -30,7 +30,7 @@ public class UrlServiceImpl implements UrlService {
     @Override
     public String getUrl(String shortUrl) throws UrlNotFoundException {
         Optional<Url> url = urlRepository.findByShortUrl(shortUrl);
-        return url.map(Url::getLongUrl).orElseThrow(() -> new UrlNotFoundException("URL was not found associated with: " + shortUrl));
+        return url.map(Url::getLongUrl).orElseThrow(() -> new UrlNotFoundException("URL was not found associated with provided short url"));
     }
 
     @Override
@@ -51,7 +51,7 @@ public class UrlServiceImpl implements UrlService {
                 urlRepository.deleteById(urlEntity.getId());
             }, 
             () -> {
-                throw new UrlNotFoundException("URL was not found associated with: " + shortenedUrl);
+                throw new UrlNotFoundException("URL was not found associated with provided short url");
             }
         );
     }
