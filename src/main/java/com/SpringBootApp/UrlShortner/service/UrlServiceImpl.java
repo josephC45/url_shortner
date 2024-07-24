@@ -2,9 +2,9 @@ package com.SpringBootApp.UrlShortner.service;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Optional;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.SpringBootApp.UrlShortner.entity.Url;
 import com.SpringBootApp.UrlShortner.exception.UrlNotFoundException;
@@ -29,31 +29,25 @@ public class UrlServiceImpl implements UrlService {
 
     @Override
     public String getUrl(String shortUrl) throws UrlNotFoundException {
-        Optional<Url> url = urlRepository.findByShortUrl(shortUrl);
-        return url.map(Url::getLongUrl).orElseThrow(() -> new UrlNotFoundException("URL was not found associated with provided short url"));
+        Url url = urlRepository.findByShortUrl(shortUrl).orElseThrow(() -> new UrlNotFoundException("URL was not found associated with provided short url"));
+        return url.getLongUrl();
     }
 
     @Override
+    @Transactional
     public Url createUrl(String longUrl) {
-        Optional<Url> url = urlRepository.findByLongUrl(longUrl);
-        if(!url.isPresent()){
+        Url url = urlRepository.findByLongUrl(longUrl).orElseGet(() -> {
             Url newlyCreatedUrl = urlAssembler.assembleUrl(longUrl);
             return urlRepository.save(newlyCreatedUrl);
-        }
-        return url.get();
+        });
+        return url;
     }
 
     @Override
+    @Transactional
     public void deleteUrl(String shortenedUrl) throws UrlNotFoundException {
-        Optional<Url> url = urlRepository.findByShortUrl(shortenedUrl);
-        url.ifPresentOrElse(
-            urlEntity -> {
-                urlRepository.deleteById(urlEntity.getId());
-            }, 
-            () -> {
-                throw new UrlNotFoundException("URL was not found associated with provided short url");
-            }
-        );
+        Url url = urlRepository.findByShortUrl(shortenedUrl).orElseThrow(() -> new UrlNotFoundException("URL was not found associated with provided short url"));
+        urlRepository.deleteById(url.getId());
+        return;
     }
-
 }
