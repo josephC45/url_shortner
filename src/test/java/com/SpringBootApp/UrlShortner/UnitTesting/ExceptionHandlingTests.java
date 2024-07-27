@@ -1,6 +1,7 @@
 package com.SpringBootApp.UrlShortner.UnitTesting;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
@@ -14,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import com.SpringBootApp.UrlShortner.dto.ErrorDto;
 import com.SpringBootApp.UrlShortner.exception.GlobalExceptionHandler;
 import com.SpringBootApp.UrlShortner.exception.UrlNotFoundException;
 import com.SpringBootApp.UrlShortner.rest.MyRestController;
@@ -45,7 +47,7 @@ public class ExceptionHandlingTests {
         when(urlService.handleDecoding(shortUrl)).thenReturn(decodedUrl);
         when(urlService.getUrl(decodedUrl)).thenThrow(new UrlNotFoundException(exceptionMessage));
 
-        ResponseEntity<String> response;
+        ResponseEntity<?> response;
         try {
             response = restController.getUrl(shortUrl);
         } catch (UrlNotFoundException ex) {
@@ -53,7 +55,9 @@ public class ExceptionHandlingTests {
         }
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertEquals(exceptionMessage, response.getBody());
+        assertTrue(response.getBody() instanceof  ErrorDto);
+        ErrorDto responseMessage = (ErrorDto) response.getBody();
+        assertEquals(exceptionMessage, responseMessage.getErrorMessage());
     }
 
     @DisplayName("should return appropriate status code and exception message when UrlNotFoundException is thrown for DELETE endpoint")
@@ -66,7 +70,7 @@ public class ExceptionHandlingTests {
         when(urlService.handleDecoding(shortUrl)).thenReturn(decodedUrl);
         doThrow(new UrlNotFoundException(exceptionMessage)).when(urlService).deleteUrl(decodedUrl);
 
-        ResponseEntity<String> response;
+        ResponseEntity<?> response;
         try {
             response = restController.deleteUrl(shortUrl);
         } catch (UrlNotFoundException ex) {
@@ -74,7 +78,9 @@ public class ExceptionHandlingTests {
         }
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertEquals(exceptionMessage, response.getBody());
+        assertTrue(response.getBody() instanceof  ErrorDto);
+        ErrorDto responseMessage = (ErrorDto) response.getBody();
+        assertEquals(exceptionMessage, responseMessage.getErrorMessage());
     }
 
 }

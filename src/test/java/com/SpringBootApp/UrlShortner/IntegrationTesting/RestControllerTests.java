@@ -13,16 +13,17 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.SpringBootApp.UrlShortner.dto.UrlDto;
 import com.SpringBootApp.UrlShortner.entity.Url;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
-//Integration Testing
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Transactional
 public class RestControllerTests {
@@ -50,11 +51,13 @@ public class RestControllerTests {
         String shortUrl = responseOfNewlyCreatedUrlObj.getBody().getShortUrl();
         String encodedShortUrl = URLEncoder.encode(shortUrl, StandardCharsets.UTF_8);
 
-        ResponseEntity<String> response = restTemplate
-        .getForEntity("/api/v1/urls?shortUrl={shortUrl}", String.class, encodedShortUrl);
+        ResponseEntity<?> response = restTemplate
+        .getForEntity("/api/v1/urls?shortUrl={shortUrl}", UrlDto.class, encodedShortUrl);
 
-        assertThat(expectedLongUrl).isEqualTo(response.getBody().toString());
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertTrue(response.getBody() instanceof UrlDto);
+        UrlDto responseMessage = (UrlDto) response.getBody();
+        assertEquals(expectedLongUrl, responseMessage.getLongUrl());
+        assertEquals(response.getStatusCode(), HttpStatus.OK);
     }
 
     @Test
@@ -70,7 +73,7 @@ public class RestControllerTests {
         ResponseEntity<Void> responseOfDeletingAboveUrlUsingShortUrl = restTemplate
         .exchange("/api/v1/urls?shortUrl={shortUrl}", HttpMethod.DELETE, deletionRequest, Void.class, encodedShortUrl);
 
-        assertThat(responseOfDeletingAboveUrlUsingShortUrl.getStatusCode().equals(HttpStatus.NO_CONTENT));
+        assertEquals(responseOfDeletingAboveUrlUsingShortUrl.getStatusCode(), HttpStatus.NO_CONTENT);
     }
 
     @Test
@@ -83,9 +86,9 @@ public class RestControllerTests {
         String decodedLongUrl = URLDecoder.decode(encodedUrl, StandardCharsets.UTF_8);
         
         assertNotNull(response.getBody());
-        assertThat(response.getBody().getLongUrl()).isEqualTo(decodedLongUrl);
+        assertEquals(response.getBody().getLongUrl(), decodedLongUrl);
         assertNotNull(response.getBody().getUrlHash());
         assertNotNull(response.getBody().getShortUrl());
-        assertThat(response.getStatusCode().equals(HttpStatus.CREATED));
+        assertEquals(response.getStatusCode(), HttpStatus.CREATED);
     }
 }

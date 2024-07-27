@@ -13,6 +13,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import com.SpringBootApp.UrlShortner.dto.UrlDto;
 import com.SpringBootApp.UrlShortner.entity.Url;
 import com.SpringBootApp.UrlShortner.service.UrlService;
 
@@ -27,10 +28,10 @@ public class MyRestController {
     }
 
     @GetMapping
-    public ResponseEntity<String> getUrl(@RequestParam String shortUrl){
+    public ResponseEntity<UrlDto> getUrl(@RequestParam String shortUrl){
         String decodedShortUrl = urlService.handleDecoding(shortUrl);
-        String longUrl = urlService.getUrl(decodedShortUrl);
-        return new ResponseEntity<>(longUrl, HttpStatus.OK);
+        UrlDto urlDto = urlService.getUrl(decodedShortUrl);
+        return new ResponseEntity<>(urlDto, HttpStatus.OK);
     }
 
     @PostMapping
@@ -42,7 +43,7 @@ public class MyRestController {
     }
        
     @DeleteMapping
-    public ResponseEntity<String> deleteUrl(@RequestParam String shortUrl){
+    public ResponseEntity<Void> deleteUrl(@RequestParam String shortUrl){
         String decodedShortUrl = urlService.handleDecoding(shortUrl);
         urlService.deleteUrl(decodedShortUrl);
         return ResponseEntity.noContent().build();

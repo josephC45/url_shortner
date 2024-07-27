@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.SpringBootApp.UrlShortner.dto.UrlDto;
 import com.SpringBootApp.UrlShortner.entity.Url;
 import com.SpringBootApp.UrlShortner.exception.UrlNotFoundException;
 import com.SpringBootApp.UrlShortner.repository.UrlRepository;
@@ -28,9 +29,9 @@ public class UrlServiceImpl implements UrlService {
     }
 
     @Override
-    public String getUrl(String shortUrl) throws UrlNotFoundException {
+    public UrlDto getUrl(String shortUrl) throws UrlNotFoundException {
         Url url = urlRepository.findByShortUrl(shortUrl).orElseThrow(() -> new UrlNotFoundException("URL was not found associated with provided short url"));
-        return url.getLongUrl();
+        return new UrlDto(url.getLongUrl());
     }
 
     @Override
