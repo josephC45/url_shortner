@@ -14,14 +14,14 @@ public class LoggingAspect {
 
     private static final Logger LOGGER = LogManager.getLogger(LoggingAspect.class);
 
-    @Before("execution (* com.SpringBootApp.UrlShortner.rest.MyRestController.*(..))")
+    @Before("execution (* com.SpringBootApp.UrlShortner.service.UrlServiceImpl.*(..))")
     public void logBefore(JoinPoint joinPoint) throws Throwable {
         String methodName = joinPoint.getSignature().getName();
         LOGGER.info("Entering method: " + methodName);
         return;
     }
 
-    @After("execution (* com.SpringBootApp.UrlShortner.rest.MyRestController.*(..))")
+    @After("execution (* com.SpringBootApp.UrlShortner.service.UrlServiceImpl.*(..))")
     public void logAfter(JoinPoint joinPoint) throws Throwable {
         String methodName = joinPoint.getSignature().getName();
         LOGGER.info("Exiting method: " + methodName);
