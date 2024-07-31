@@ -35,6 +35,7 @@ public class UrlAssemblerTests {
         when(configProp.getShortUrlBase()).thenReturn("http://localhost:8080/");
 
         Url expectedUrl = new Url("7chd9s1", "http://localhost:8080/7chd9s1", "http://localhost:8080/abc1234567");
+        
         //act
         Url actual = urlAssembler.assembleUrl("http://localhost:8080/abc1234567");
 

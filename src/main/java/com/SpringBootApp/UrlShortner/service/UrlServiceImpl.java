@@ -46,8 +46,8 @@ public class UrlServiceImpl implements UrlService {
 
     @Override
     @Transactional
-    public void deleteUrl(String shortenedUrl) throws UrlNotFoundException {
-        Url url = urlRepository.findByShortUrl(shortenedUrl).orElseThrow(() -> new UrlNotFoundException("URL was not found associated with provided short url"));
+    public void deleteUrl(String shortUrl) throws UrlNotFoundException {
+        Url url = urlRepository.findByShortUrl(shortUrl).orElseThrow(() -> new UrlNotFoundException("URL was not found associated with provided short url"));
         urlRepository.deleteById(url.getId());
     }
 }
