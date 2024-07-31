@@ -29,23 +29,23 @@ public class MyRestController {
 
     @GetMapping
     public ResponseEntity<UrlDto> getUrl(@RequestParam String shortUrl){
-        String decodedShortUrl = urlService.handleDecoding(shortUrl);
-        UrlDto urlDto = urlService.getUrl(decodedShortUrl);
+        String deserializedShortUrl = urlService.deserialize(shortUrl);
+        UrlDto urlDto = urlService.getUrl(deserializedShortUrl);
         return new ResponseEntity<>(urlDto, HttpStatus.OK);
     }
 
     @PostMapping
     public ResponseEntity<Url> createUrl(@RequestBody String longUrl, UriComponentsBuilder ucb) {
-        String decodedLongUrl = urlService.handleDecoding(longUrl);
-        Url createdUrl = urlService.createUrl(decodedLongUrl);
+        String deserializedLongUrl = urlService.deserialize(longUrl);
+        Url createdUrl = urlService.createUrl(deserializedLongUrl);
         UriComponents uriComponents = ucb.path("/api/v1/urls/{id}").buildAndExpand(createdUrl.getId());
         return ResponseEntity.created(uriComponents.toUri()).body(createdUrl);
     }
        
     @DeleteMapping
     public ResponseEntity<Void> deleteUrl(@RequestParam String shortUrl){
-        String decodedShortUrl = urlService.handleDecoding(shortUrl);
-        urlService.deleteUrl(decodedShortUrl);
+        String deserializedShortUrl = urlService.deserialize(shortUrl);
+        urlService.deleteUrl(deserializedShortUrl);
         return ResponseEntity.noContent().build();
     }
 }

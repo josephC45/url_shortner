@@ -18,13 +18,11 @@ public class LoggingAspect {
     public void logBefore(JoinPoint joinPoint) throws Throwable {
         String methodName = joinPoint.getSignature().getName();
         LOGGER.info("Entering method: " + methodName);
-        return;
     }
 
     @After("execution (* com.SpringBootApp.UrlShortner.service.UrlServiceImpl.*(..))")
     public void logAfter(JoinPoint joinPoint) throws Throwable {
         String methodName = joinPoint.getSignature().getName();
         LOGGER.info("Exiting method: " + methodName);
-        return;
     }
 }

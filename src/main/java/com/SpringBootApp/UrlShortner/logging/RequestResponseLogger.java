@@ -15,13 +15,13 @@ import jakarta.servlet.http.HttpServletResponse;
 @Component
 public class RequestResponseLogger extends OncePerRequestFilter{
 
-    private static final Logger logger = LogManager.getLogger(RequestResponseLogger.class);
+    private static final Logger LOGGER = LogManager.getLogger(RequestResponseLogger.class);
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        logger.info("Incoming Request: method={} uri={}", request.getMethod(), request.getRequestURI());
+        LOGGER.info("Incoming Request: method={} uri={}", request.getMethod(), request.getRequestURI());
         filterChain.doFilter(request, response);
-        logger.info("Outgoing response: status {}", response.getStatus());
+        LOGGER.info("Outgoing response: status {}", response.getStatus());
     }
 
 }

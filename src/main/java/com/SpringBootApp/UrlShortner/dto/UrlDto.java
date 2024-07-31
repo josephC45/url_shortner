@@ -2,19 +2,20 @@ package com.SpringBootApp.UrlShortner.dto;
 
 public class UrlDto {
     
-    private String longUrl;
+    private String url;
 
     public UrlDto(){}
 
-    public UrlDto(String longUrl){
-        this.longUrl = longUrl;
+    public UrlDto(String url){
+        this.url = url;
     }
 
-    public String getLongUrl(){
-        return longUrl;
+    public String getUrl(){
+        return url;
     }
-    public void setLongUrl(String longUrl){
-        this.longUrl = longUrl;
+
+    public void setUrl(String url){
+        this.url = url;
     }
 
 }

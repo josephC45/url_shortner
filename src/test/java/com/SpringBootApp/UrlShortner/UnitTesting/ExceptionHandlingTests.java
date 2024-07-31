@@ -41,11 +41,11 @@ public class ExceptionHandlingTests {
     @Test
     public void shouldReturnNotFoundStatusAndMessageWhenUrlNotFoundExceptionIsThrownForGetUrl() {
         String shortUrl = "shortUrl";
-        String decodedUrl = "decodedUrl";
+        String deserializedUrl = "deserializedUrl";
         String exceptionMessage = "URL was not found associated with provided short url";
 
-        when(urlService.handleDecoding(shortUrl)).thenReturn(decodedUrl);
-        when(urlService.getUrl(decodedUrl)).thenThrow(new UrlNotFoundException(exceptionMessage));
+        when(urlService.deserialize(shortUrl)).thenReturn(deserializedUrl);
+        when(urlService.getUrl(deserializedUrl)).thenThrow(new UrlNotFoundException(exceptionMessage));
 
         ResponseEntity<?> response;
         try {
@@ -64,11 +64,11 @@ public class ExceptionHandlingTests {
     @Test
     public void shouldReturnNotFoundStatusAndMessageWhenUrlNotFoundExceptionIsThrownForDeleteUrl() {
         String shortUrl = "shortUrl";
-        String decodedUrl = "decodedUrl";
+        String deserializedUrl = "deserializedUrl";
         String exceptionMessage = "URL was not found associated with provided short url";
 
-        when(urlService.handleDecoding(shortUrl)).thenReturn(decodedUrl);
-        doThrow(new UrlNotFoundException(exceptionMessage)).when(urlService).deleteUrl(decodedUrl);
+        when(urlService.deserialize(shortUrl)).thenReturn(deserializedUrl);
+        doThrow(new UrlNotFoundException(exceptionMessage)).when(urlService).deleteUrl(deserializedUrl);
 
         ResponseEntity<?> response;
         try {

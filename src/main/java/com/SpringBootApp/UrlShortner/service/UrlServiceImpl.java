@@ -23,9 +23,9 @@ public class UrlServiceImpl implements UrlService {
     }
 
     @Override
-    public String handleDecoding(String url){
-        String decodedString = URLDecoder.decode(url, StandardCharsets.UTF_8);
-        return decodedString;
+    public String deserialize(String url){
+        String deserializedString = URLDecoder.decode(url, StandardCharsets.UTF_8);
+        return deserializedString;
     }
 
     @Override
@@ -49,6 +49,5 @@ public class UrlServiceImpl implements UrlService {
     public void deleteUrl(String shortenedUrl) throws UrlNotFoundException {
         Url url = urlRepository.findByShortUrl(shortenedUrl).orElseThrow(() -> new UrlNotFoundException("URL was not found associated with provided short url"));
         urlRepository.deleteById(url.getId());
-        return;
     }
 }
