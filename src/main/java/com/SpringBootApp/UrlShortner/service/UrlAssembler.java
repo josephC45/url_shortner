@@ -2,8 +2,10 @@ package com.SpringBootApp.UrlShortner.service;
 
 import com.SpringBootApp.UrlShortner.entity.Url;
 
+import reactor.core.publisher.Mono;
+
 public interface UrlAssembler {
 
-    public Url assembleUrl(String longUrl);
+    public Mono<Url> assembleUrl(String longUrl);
     
 }
