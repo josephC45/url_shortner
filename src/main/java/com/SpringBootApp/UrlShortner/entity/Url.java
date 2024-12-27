@@ -1,28 +1,15 @@
 package com.SpringBootApp.UrlShortner.entity;
 
-import jakarta.persistence.Id;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Table;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 
-@Entity
-@Table(name="url")
+@Table("url") 
 public class Url {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
-    @Column(name="id")
     private int id;
-    
-    @Column(name="urlHash")
     private String urlHash;
-
-    @Column(name="shortUrl")
     private String shortUrl;
-    
-    @Column(name="longUrl")
     private String longUrl;
 
     public Url(){}

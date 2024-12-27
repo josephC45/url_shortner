@@ -1,15 +1,18 @@
 package com.SpringBootApp.UrlShortner.repository;
 
-import java.util.Optional;
-
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
 
 import com.SpringBootApp.UrlShortner.entity.Url;
 
-@Repository
-public interface UrlRepository extends JpaRepository<Url,Integer> {
+import reactor.core.publisher.Mono;
 
-    public Optional<Url> findByLongUrl(String longUrl);
-    public Optional<Url> findByShortUrl(String shortUrl); 
+@Repository
+public interface UrlRepository extends ReactiveCrudRepository<Url, Integer> {
+
+    public Mono<Url> findByLongUrl(String longUrl);
+
+    public Mono<Url> findByShortUrl(String shortUrl);
+
+    public Mono<Void> deleteById(Integer id);
 }
