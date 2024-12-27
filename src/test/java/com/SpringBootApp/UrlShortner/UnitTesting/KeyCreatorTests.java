@@ -16,6 +16,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.SpringBootApp.UrlShortner.config.ConfigProp;
 import com.SpringBootApp.UrlShortner.service.KeyCreatorImpl;
 
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
+
 @ExtendWith(MockitoExtension.class)
 public class KeyCreatorTests {
 
@@ -33,12 +36,16 @@ public class KeyCreatorTests {
         String regex = "^[a-zA-Z0-9]*$";
 
         //act
-        String createdKey = keyCreator.createKey();
+        Mono<String> resultKey = keyCreator.createKey();
 
         //assert
-        assertNotNull(createdKey, "Key should not be null");
-        assertFalse(createdKey.isEmpty(), "Key should not be empty");
-        assertTrue(createdKey.matches(regex), "Key should match the regex");
-        assertEquals(7, createdKey.length(), "Key should have a length of 7");
+        StepVerifier.create(resultKey)
+        .assertNext(createdKey -> {
+            assertNotNull(createdKey, "Key should not be null");
+            assertFalse(createdKey.isEmpty(), "Key should not be empty");
+            assertTrue(createdKey.matches(regex), "Key should match the regex");
+            assertEquals(7, createdKey.length(), "Key should have a length of 7");
+        })
+        .verifyComplete();
     }
 }
