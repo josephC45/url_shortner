@@ -1,7 +1,9 @@
 package com.SpringBootApp.UrlShortner.service;
 
+import reactor.core.publisher.Mono;
+
 public interface KeyCreator {
 
-    public String createKey();
+    public Mono<String> createKey();
     
 }
