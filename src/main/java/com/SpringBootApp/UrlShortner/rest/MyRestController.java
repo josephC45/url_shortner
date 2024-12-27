@@ -17,35 +17,37 @@ import com.SpringBootApp.UrlShortner.dto.UrlDto;
 import com.SpringBootApp.UrlShortner.entity.Url;
 import com.SpringBootApp.UrlShortner.service.UrlService;
 
+import reactor.core.publisher.Mono;
+
 @RestController
 @RequestMapping("/api/v1/urls")
 public class MyRestController {
 
     private UrlService urlService;
 
-    public MyRestController(UrlService urlService){
+    public MyRestController(UrlService urlService) {
         this.urlService = urlService;
     }
 
     @GetMapping
-    public ResponseEntity<UrlDto> getUrl(@RequestParam String shortUrl){
-        String deserializedShortUrl = urlService.deserialize(shortUrl);
-        UrlDto urlDto = urlService.getUrl(deserializedShortUrl);
-        return new ResponseEntity<>(urlDto, HttpStatus.OK);
+    public Mono<ResponseEntity<UrlDto>> getUrl(@RequestParam String shortUrl) {
+        return urlService.getUrl(shortUrl)
+                .map(urlDto -> ResponseEntity.ok().body(urlDto))
+                .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<Url> createUrl(@RequestBody String longUrl, UriComponentsBuilder ucb) {
-        String deserializedLongUrl = urlService.deserialize(longUrl);
-        Url createdUrl = urlService.createUrl(deserializedLongUrl);
-        UriComponents uriComponents = ucb.path("/api/v1/urls/{id}").buildAndExpand(createdUrl.getId());
-        return ResponseEntity.created(uriComponents.toUri()).body(createdUrl);
+    public Mono<ResponseEntity<Url>> createUrl(@RequestBody String longUrl, UriComponentsBuilder ucb) {
+        return urlService.createUrl(longUrl)
+                .map(createdUrl -> {
+                    UriComponents uriComponents = ucb.path("/api/v1/urls/{id}").buildAndExpand(createdUrl.getId());
+                    return ResponseEntity.created(uriComponents.toUri()).body(createdUrl);
+                });
     }
-       
+
     @DeleteMapping
-    public ResponseEntity<Void> deleteUrl(@RequestParam String shortUrl){
-        String deserializedShortUrl = urlService.deserialize(shortUrl);
-        urlService.deleteUrl(deserializedShortUrl);
-        return ResponseEntity.noContent().build();
+    public Mono<ResponseEntity<Void>> deleteUrl(@RequestParam String shortUrl) {
+        return urlService.deleteUrl(shortUrl)
+                .then(Mono.just(ResponseEntity.noContent().build()));
     }
 }
