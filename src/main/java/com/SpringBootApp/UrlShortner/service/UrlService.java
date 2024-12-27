@@ -3,13 +3,13 @@ package com.SpringBootApp.UrlShortner.service;
 import com.SpringBootApp.UrlShortner.dto.UrlDto;
 import com.SpringBootApp.UrlShortner.entity.Url;
 
+import reactor.core.publisher.Mono;
+
 public interface UrlService {
 
-    String deserialize(String url);
+    Mono<Url> createUrl(String longUrl);
 
-    Url createUrl(String longUrl);
-
-    UrlDto getUrl(String shortUrl);
+    Mono<UrlDto> getUrl(String shortUrl);
     
-    void deleteUrl(String shortUrl);
+    Mono<Void> deleteUrl(String shortUrl);
 }

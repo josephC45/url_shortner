@@ -1,15 +1,13 @@
 package com.SpringBootApp.UrlShortner.service;
 
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
-
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.SpringBootApp.UrlShortner.dto.UrlDto;
 import com.SpringBootApp.UrlShortner.entity.Url;
 import com.SpringBootApp.UrlShortner.exception.UrlNotFoundException;
 import com.SpringBootApp.UrlShortner.repository.UrlRepository;
+
+import reactor.core.publisher.Mono;
 
 @Service
 public class UrlServiceImpl implements UrlService {
@@ -17,37 +15,27 @@ public class UrlServiceImpl implements UrlService {
     private UrlRepository urlRepository;
     private UrlAssembler urlAssembler;
 
-    public UrlServiceImpl(UrlRepository urlRepository, UrlAssembler urlAssembler){
+    public UrlServiceImpl(UrlRepository urlRepository, UrlAssembler urlAssembler) {
         this.urlRepository = urlRepository;
         this.urlAssembler = urlAssembler;
     }
 
     @Override
-    public String deserialize(String url){
-        String deserializedString = URLDecoder.decode(url, StandardCharsets.UTF_8);
-        return deserializedString;
+    public Mono<UrlDto> getUrl(String shortUrl) throws UrlNotFoundException {
+        return urlRepository.findByShortUrl(shortUrl).map(url -> new UrlDto(url.getLongUrl()));
     }
 
     @Override
-    public UrlDto getUrl(String shortUrl) throws UrlNotFoundException {
-        Url url = urlRepository.findByShortUrl(shortUrl).orElseThrow(() -> new UrlNotFoundException("URL was not found associated with provided short url"));
-        return new UrlDto(url.getLongUrl());
+    public Mono<Url> createUrl(String longUrl) {
+        return urlRepository.findByLongUrl(longUrl)
+                .switchIfEmpty(
+                        urlAssembler.assembleUrl(longUrl)
+                                .flatMap(urlRepository::save));
     }
 
     @Override
-    @Transactional
-    public Url createUrl(String longUrl) {
-        Url url = urlRepository.findByLongUrl(longUrl).orElseGet(() -> {
-            Url newlyCreatedUrl = urlAssembler.assembleUrl(longUrl);
-            return urlRepository.save(newlyCreatedUrl);
-        });
-        return url;
-    }
-
-    @Override
-    @Transactional
-    public void deleteUrl(String shortUrl) throws UrlNotFoundException {
-        Url url = urlRepository.findByShortUrl(shortUrl).orElseThrow(() -> new UrlNotFoundException("URL was not found associated with provided short url"));
-        urlRepository.deleteById(url.getId());
+    public Mono<Void> deleteUrl(String shortUrl) throws UrlNotFoundException {
+        return urlRepository.findByShortUrl(shortUrl)
+                .flatMap(url -> urlRepository.deleteById(url.getId()));
     }
 }
