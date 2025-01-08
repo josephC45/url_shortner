@@ -1,94 +1,112 @@
 package com.SpringBootApp.UrlShortner.IntegrationTesting;
 
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.test.web.reactive.server.WebTestClient;
 
 import com.SpringBootApp.UrlShortner.dto.UrlDto;
 import com.SpringBootApp.UrlShortner.entity.Url;
+import com.SpringBootApp.UrlShortner.repository.UrlRepository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.net.URLDecoder;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Transactional
 public class RestControllerTests {
 
     @Autowired
-    TestRestTemplate restTemplate;
+    private WebTestClient webTestClient;
+    
+    @Autowired
+    private UrlRepository urlRepository;
 
-    private static HttpHeaders headers;
-    private static String serializedUrl;
-
-    @BeforeAll
-    public static void setup() {
-        headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        serializedUrl = URLEncoder.encode("http://localhost:8080/abcdefg1234567", StandardCharsets.UTF_8);
+    @BeforeEach
+    public void setup() {
+        urlRepository.deleteAll().block();
     }
 
     @Test
-    void shouldReturnNoContentStatusCodeAndLongUrl_WhenGivenJsonValueOfShortUrl() {
-        HttpEntity<String> creationRequest = new HttpEntity<String>(serializedUrl, headers);
-        ResponseEntity<Url> responseOfNewlyCreatedUrlObj = restTemplate
-        .postForEntity("/api/v1/urls", creationRequest, Url.class);
+    void shouldReturnOkStatusCodeAndLongUrl_WhenGivenJsonValueOfShortUrl() {
+        String urlRequest = "http://localhost:8080/abcdefg1234567";
+        Url createdUrl = webTestClient.post()
+                        .uri("/api/v1/urls")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(urlRequest)
+                        .exchange()
+                        .expectStatus().isCreated()
+                        .expectBody(Url.class)
+                        .returnResult()
+                        .getResponseBody();
 
-        String expectedLongUrl = responseOfNewlyCreatedUrlObj.getBody().getLongUrl();
-        String shortUrl = responseOfNewlyCreatedUrlObj.getBody().getShortUrl();
-        String serializedShortUrl = URLEncoder.encode(shortUrl, StandardCharsets.UTF_8);
+        assertNotNull(createdUrl);
+        assertNotNull(createdUrl.getShortUrl());
 
-        ResponseEntity<?> response = restTemplate
-        .getForEntity("/api/v1/urls?shortUrl={shortUrl}", UrlDto.class, serializedShortUrl);
-
-        assertTrue(response.getBody() instanceof UrlDto);
-        UrlDto responseMessage = (UrlDto) response.getBody();
-        assertEquals(expectedLongUrl, responseMessage.getUrl());
-        assertEquals(response.getStatusCode(), HttpStatus.OK);
+        webTestClient.get()
+                    .uri(uriBuilder -> uriBuilder.path("/api/v1/urls")
+                        .queryParam("shortUrl", createdUrl.getShortUrl())
+                        .build())
+                    .exchange()
+                    .expectStatus().isOk()
+                    .expectBody(UrlDto.class)
+                    .consumeWith(response -> {
+                        UrlDto responseBody = response.getResponseBody();
+                        assertNotNull(responseBody);
+                        assertEquals(urlRequest, responseBody.getUrl());
+                    });
+                        
     }
 
     @Test
     void shouldReturnNoContentStatusCode_WhenGivenJsonValueOfShortUrlToDelete() {
-        HttpEntity<String> creationRequest = new HttpEntity<String>(serializedUrl, headers);
-        ResponseEntity<Url> responseOfNewlyCreatedUrlObj = restTemplate
-        .postForEntity("/api/v1/urls", creationRequest, Url.class);
+        String urlRequest = "http://localhost:8080/abcdefg1234567";
+        Url createdUrl = webTestClient.post()
+                        .uri("/api/v1/urls")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(urlRequest)
+                        .exchange()
+                        .expectStatus().isCreated()
+                        .expectBody(Url.class)
+                        .returnResult()
+                        .getResponseBody();
 
-        String shortUrl = responseOfNewlyCreatedUrlObj.getBody().getShortUrl().toString();
-        String serializedShortUrl = URLEncoder.encode(shortUrl, StandardCharsets.UTF_8);
+        assertNotNull(createdUrl);
+        assertNotNull(createdUrl.getShortUrl());
 
-        HttpEntity<String> deletionRequest = new HttpEntity<String>(headers);
-        ResponseEntity<Void> responseOfDeletingAboveUrlUsingShortUrl = restTemplate
-        .exchange("/api/v1/urls?shortUrl={shortUrl}", HttpMethod.DELETE, deletionRequest, Void.class, serializedShortUrl);
+        webTestClient.delete()
+        .uri(uriBuilder -> uriBuilder
+                .path("/api/v1/urls")
+                .queryParam("shortUrl", createdUrl.getShortUrl())
+                .build())
+        .exchange()
+        .expectStatus().isNoContent();
 
-        assertEquals(responseOfDeletingAboveUrlUsingShortUrl.getStatusCode(), HttpStatus.NO_CONTENT);
+        Optional<Url> deletedUrl = urlRepository.findByShortUrl(createdUrl.getShortUrl()).blockOptional();
+        assertTrue(deletedUrl.isEmpty());
     }
 
     @Test
     void shouldReturnCreatedStatusAndBody_WhenGivenJsonValueOfLongUrl() {
-        HttpEntity<String> request = new HttpEntity<String>(serializedUrl,headers);
+        String urlRequest = "http://localhost:8080/abcdefg1234567";
+        Url createdUrl = webTestClient.post()
+                        .uri("/api/v1/urls")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(urlRequest)
+                        .exchange()
+                        .expectStatus().isCreated()
+                        .expectBody(Url.class)
+                        .returnResult()
+                        .getResponseBody();
 
-        ResponseEntity<Url> response = restTemplate
-        .postForEntity("/api/v1/urls", request, Url.class);
-
-        String deserializedLongUrl = URLDecoder.decode(serializedUrl, StandardCharsets.UTF_8);
-        
-        assertNotNull(response.getBody());
-        assertEquals(response.getBody().getLongUrl(), deserializedLongUrl);
-        assertNotNull(response.getBody().getUrlHash());
-        assertNotNull(response.getBody().getShortUrl());
-        assertEquals(response.getStatusCode(), HttpStatus.CREATED);
+        assertNotNull(createdUrl);
+        assertNotNull(createdUrl.getUrlHash());
+        assertNotNull(createdUrl.getShortUrl());
+        assertNotNull(createdUrl.getLongUrl());
+        assertEquals(urlRequest, createdUrl.getLongUrl());
     }
 }
