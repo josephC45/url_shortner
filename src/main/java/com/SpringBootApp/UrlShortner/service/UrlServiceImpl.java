@@ -8,6 +8,7 @@ import com.SpringBootApp.UrlShortner.exception.UrlNotFoundException;
 import com.SpringBootApp.UrlShortner.repository.UrlRepository;
 
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 @Service
 public class UrlServiceImpl implements UrlService {
@@ -22,15 +23,17 @@ public class UrlServiceImpl implements UrlService {
 
     @Override
     public Mono<UrlDto> getUrl(String shortUrl) throws UrlNotFoundException {
-        return urlRepository.findByShortUrl(shortUrl).map(url -> new UrlDto(url.getLongUrl()));
+        return urlRepository.findByShortUrl(shortUrl)
+                .map(url -> new UrlDto(url.getLongUrl()));
     }
 
     @Override
     public Mono<Url> createUrl(String longUrl) {
         return urlRepository.findByLongUrl(longUrl)
                 .switchIfEmpty(
-                        urlAssembler.assembleUrl(longUrl)
-                                .flatMap(urlRepository::save));
+                        Mono.defer(() -> Mono.fromCallable(() -> urlAssembler.assembleUrl(longUrl))
+                                .subscribeOn(Schedulers.boundedElastic())
+                                .flatMap(urlRepository::save)));
     }
 
     @Override

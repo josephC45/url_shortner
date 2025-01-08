@@ -10,6 +10,6 @@ public interface UrlService {
     Mono<Url> createUrl(String longUrl);
 
     Mono<UrlDto> getUrl(String shortUrl);
-    
+
     Mono<Void> deleteUrl(String shortUrl);
 }
