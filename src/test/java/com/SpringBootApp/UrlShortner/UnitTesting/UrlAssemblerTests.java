@@ -15,9 +15,6 @@ import com.SpringBootApp.UrlShortner.entity.Url;
 import com.SpringBootApp.UrlShortner.service.KeyCreatorImpl;
 import com.SpringBootApp.UrlShortner.service.UrlAssemblerImpl;
 
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
-
 @ExtendWith(MockitoExtension.class)
 public class UrlAssemblerTests {
 
@@ -34,21 +31,17 @@ public class UrlAssemblerTests {
     @Test
     public void shouldCreateNewUrlObjectWithExpectedProperties(){
         //arrange
-        when(keyCreator.createKey()).thenReturn(Mono.just("7chd9s1"));
+        when(keyCreator.createKey()).thenReturn("7chd9s1");
         when(configProp.getShortUrlBase()).thenReturn("http://localhost:8080/");
 
         Url expectedUrl = new Url("7chd9s1", "http://localhost:8080/7chd9s1", "http://localhost:8080/abc1234567");
         
         //act
-        Mono<Url> resultMono = urlAssembler.assembleUrl("http://localhost:8080/abc1234567");
+        Url actual = urlAssembler.assembleUrl("http://localhost:8080/abc1234567");
 
         //assert
-        StepVerifier.create(resultMono)
-        .assertNext(actual -> {
-            assertEquals(expectedUrl.getUrlHash(), actual.getUrlHash(), "Expected url and actual url should match");
-            assertEquals(expectedUrl.getShortUrl(), actual.getShortUrl(), "Expected shorturl and actual shorturl should match");
-            assertEquals(expectedUrl.getLongUrl(), actual.getLongUrl(), "Expected longurl and shorturl should match");
-        })
-        .verifyComplete();
+        assertEquals(expectedUrl.getUrlHash(), actual.getUrlHash(), "Expected url and actual url should match");
+        assertEquals(expectedUrl.getShortUrl(), actual.getShortUrl(), "Expected shorturl and actual shorturl should match");
+        assertEquals(expectedUrl.getLongUrl(), actual.getLongUrl(), "Expected longurl and shorturl should match");
     }
 }
