@@ -6,8 +6,6 @@ import org.springframework.stereotype.Service;
 import com.SpringBootApp.UrlShortner.config.ConfigProp;
 import com.SpringBootApp.UrlShortner.entity.Url;
 
-import reactor.core.publisher.Mono;
-
 @Service
 @EnableConfigurationProperties(ConfigProp.class)
 public class UrlAssemblerImpl implements UrlAssembler {
@@ -20,11 +18,10 @@ public class UrlAssemblerImpl implements UrlAssembler {
         this.configProp = configProp;
     }
 
-    public Mono<Url> assembleUrl(String longUrl) {
-        return keyCreator.createKey()
-                .map(key -> {
-                    String shortUrl = configProp.getShortUrlBase().concat(key);
-                    return new Url(key, shortUrl, longUrl);
-                });
+    @Override
+    public Url assembleUrl(String longUrl) {
+        String key = keyCreator.createKey();
+        String shortUrl = configProp.getShortUrlBase().concat(key);
+        return new Url(key, shortUrl, longUrl);
     }
 }
