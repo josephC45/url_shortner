@@ -4,17 +4,18 @@ public class ErrorDto {
 
     private String errorMessage;
 
-    public ErrorDto(){}
+    public ErrorDto() {
+    }
 
-    public ErrorDto(String errorMessage){
+    public ErrorDto(String errorMessage) {
         this.errorMessage = errorMessage;
     }
 
-    public String getErrorMessage(){
+    public String getErrorMessage() {
         return errorMessage;
     }
-    
-    public void setErrorMessage(String errorMessage){
+
+    public void setErrorMessage(String errorMessage) {
         this.errorMessage = errorMessage;
     }
 

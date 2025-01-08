@@ -9,9 +9,9 @@ import com.SpringBootApp.UrlShortner.dto.ErrorDto;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
-    
+
     @ExceptionHandler(UrlNotFoundException.class)
-    public ResponseEntity<ErrorDto> handleUrlNotFoundException(UrlNotFoundException ex){
+    public ResponseEntity<ErrorDto> handleUrlNotFoundException(UrlNotFoundException ex) {
         return new ResponseEntity<>(new ErrorDto(ex.getMessage()), HttpStatus.NOT_FOUND);
     }
 }

@@ -2,7 +2,7 @@ package com.SpringBootApp.UrlShortner.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties(prefix="app")
+@ConfigurationProperties(prefix = "app")
 public class ConfigProp {
 
     private int baseConversion;
@@ -19,7 +19,7 @@ public class ConfigProp {
     public String getShortUrlBase() {
         return shortUrlBase;
     }
-    
+
     public void setShortUrlBase(String shortUrlBase) {
         this.shortUrlBase = shortUrlBase;
     }

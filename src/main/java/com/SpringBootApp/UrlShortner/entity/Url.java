@@ -3,7 +3,7 @@ package com.SpringBootApp.UrlShortner.entity;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
-@Table("url") 
+@Table("url")
 public class Url {
 
     @Id
@@ -12,9 +12,10 @@ public class Url {
     private String shortUrl;
     private String longUrl;
 
-    public Url(){}
+    public Url() {
+    }
 
-    public Url(String urlHash, String shortUrl, String longUrl){
+    public Url(String urlHash, String shortUrl, String longUrl) {
         this.urlHash = urlHash;
         this.shortUrl = shortUrl;
         this.longUrl = longUrl;
