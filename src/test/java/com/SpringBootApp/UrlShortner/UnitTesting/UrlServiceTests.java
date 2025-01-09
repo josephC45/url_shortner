@@ -32,7 +32,7 @@ public class UrlServiceTests {
     UrlServiceImpl urlService;
 
     @Test
-    public void shouldReturnUrlDtoWhenShortUrlExists(){
+    public void shouldReturnUrlDtoWhenShortUrlExists() {
         String hash = "t1234";
         String shortUrl = "http://localhost:8080/t1234";
         String longUrl = "http://localhost:8080/abcd1234567";
@@ -42,14 +42,14 @@ public class UrlServiceTests {
         Mono<UrlDto> result = urlService.getUrl(shortUrl);
 
         StepVerifier.create(result)
-        .expectNextMatches(urlDto -> {
-            assertEquals(longUrl, urlDto.getUrl());
-            return true;
-        }).verifyComplete();
+                .expectNextMatches(urlDto -> {
+                    assertEquals(longUrl, urlDto.getUrl());
+                    return true;
+                }).verifyComplete();
     }
 
     @Test
-    public void shouldThrowUrlNotFoundExceptionWhenShortUrlDoesNotExist(){
+    public void shouldThrowUrlNotFoundExceptionWhenShortUrlDoesNotExist() {
         String shortUrl = "http://localhost:8080/t1234";
         String exceptionMessage = "URL not found for the given short URL: " + shortUrl;
         Mockito.when(urlRepository.findByShortUrl(shortUrl)).thenReturn(Mono.empty());
@@ -57,8 +57,8 @@ public class UrlServiceTests {
         Mono<UrlDto> result = urlService.getUrl(shortUrl);
 
         StepVerifier.create(result)
-        .expectErrorMatches(throwable -> throwable instanceof UrlNotFoundException &&
-            throwable.getMessage().contains(exceptionMessage)
-        ).verify();
+                .expectErrorMatches(throwable -> throwable instanceof UrlNotFoundException &&
+                        throwable.getMessage().contains(exceptionMessage))
+                .verify();
     }
 }
