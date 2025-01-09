@@ -7,11 +7,13 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.SpringBootApp.UrlShortner.dto.ErrorDto;
 
+import reactor.core.publisher.Mono;
+
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(UrlNotFoundException.class)
-    public ResponseEntity<ErrorDto> handleUrlNotFoundException(UrlNotFoundException ex) {
-        return new ResponseEntity<>(new ErrorDto(ex.getMessage()), HttpStatus.NOT_FOUND);
+    public Mono<ResponseEntity<ErrorDto>> handleUrlNotFoundException(UrlNotFoundException ex) {
+        return Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorDto(ex.getMessage())));
     }
 }
