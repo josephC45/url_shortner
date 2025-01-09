@@ -27,15 +27,15 @@ public class KeyCreatorTests {
 
     @DisplayName("should create a alphanumeric string with a length of 7")
     @Test
-    public void shouldReturnAlphaNumericHashOfLengthSeven(){
-        //arrange
+    public void shouldReturnAlphaNumericHashOfLengthSeven() {
+        // arrange
         when(configProp.getBaseConversion()).thenReturn(62);
         String regex = "^[a-zA-Z0-9]*$";
 
-        //act
+        // act
         String createdKey = keyCreator.createKey();
 
-        //assert
+        // assert
         assertNotNull(createdKey, "Key should not be null");
         assertFalse(createdKey.isEmpty(), "Key should not be empty");
         assertTrue(createdKey.matches(regex), "Key should match the regex");

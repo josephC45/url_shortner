@@ -22,7 +22,7 @@ public class RestControllerTests {
 
     @Autowired
     private WebTestClient webTestClient;
-    
+
     @Autowired
     private UrlRepository urlRepository;
 
@@ -35,56 +35,56 @@ public class RestControllerTests {
     void shouldReturnOkStatusCodeAndLongUrl_WhenGivenJsonValueOfShortUrl() {
         String urlRequest = "http://localhost:8080/abcdefg1234567";
         Url createdUrl = webTestClient.post()
-                        .uri("/api/v1/urls")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .bodyValue(urlRequest)
-                        .exchange()
-                        .expectStatus().isCreated()
-                        .expectBody(Url.class)
-                        .returnResult()
-                        .getResponseBody();
+                .uri("/api/v1/urls")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(urlRequest)
+                .exchange()
+                .expectStatus().isCreated()
+                .expectBody(Url.class)
+                .returnResult()
+                .getResponseBody();
 
         assertNotNull(createdUrl);
         assertNotNull(createdUrl.getShortUrl());
 
         webTestClient.get()
-                    .uri(uriBuilder -> uriBuilder.path("/api/v1/urls")
+                .uri(uriBuilder -> uriBuilder.path("/api/v1/urls")
                         .queryParam("shortUrl", createdUrl.getShortUrl())
                         .build())
-                    .exchange()
-                    .expectStatus().isOk()
-                    .expectBody(UrlDto.class)
-                    .consumeWith(response -> {
-                        UrlDto responseBody = response.getResponseBody();
-                        assertNotNull(responseBody);
-                        assertEquals(urlRequest, responseBody.getUrl());
-                    });
-                        
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(UrlDto.class)
+                .consumeWith(response -> {
+                    UrlDto responseBody = response.getResponseBody();
+                    assertNotNull(responseBody);
+                    assertEquals(urlRequest, responseBody.getUrl());
+                });
+
     }
 
     @Test
     void shouldReturnNoContentStatusCode_WhenGivenJsonValueOfShortUrlToDelete() {
         String urlRequest = "http://localhost:8080/abcdefg1234567";
         Url createdUrl = webTestClient.post()
-                        .uri("/api/v1/urls")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .bodyValue(urlRequest)
-                        .exchange()
-                        .expectStatus().isCreated()
-                        .expectBody(Url.class)
-                        .returnResult()
-                        .getResponseBody();
+                .uri("/api/v1/urls")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(urlRequest)
+                .exchange()
+                .expectStatus().isCreated()
+                .expectBody(Url.class)
+                .returnResult()
+                .getResponseBody();
 
         assertNotNull(createdUrl);
         assertNotNull(createdUrl.getShortUrl());
 
         webTestClient.delete()
-        .uri(uriBuilder -> uriBuilder
-                .path("/api/v1/urls")
-                .queryParam("shortUrl", createdUrl.getShortUrl())
-                .build())
-        .exchange()
-        .expectStatus().isNoContent();
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/v1/urls")
+                        .queryParam("shortUrl", createdUrl.getShortUrl())
+                        .build())
+                .exchange()
+                .expectStatus().isNoContent();
 
         Optional<Url> deletedUrl = urlRepository.findByShortUrl(createdUrl.getShortUrl()).blockOptional();
         assertTrue(deletedUrl.isEmpty());
@@ -94,14 +94,14 @@ public class RestControllerTests {
     void shouldReturnCreatedStatusAndBody_WhenGivenJsonValueOfLongUrl() {
         String urlRequest = "http://localhost:8080/abcdefg1234567";
         Url createdUrl = webTestClient.post()
-                        .uri("/api/v1/urls")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .bodyValue(urlRequest)
-                        .exchange()
-                        .expectStatus().isCreated()
-                        .expectBody(Url.class)
-                        .returnResult()
-                        .getResponseBody();
+                .uri("/api/v1/urls")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(urlRequest)
+                .exchange()
+                .expectStatus().isCreated()
+                .expectBody(Url.class)
+                .returnResult()
+                .getResponseBody();
 
         assertNotNull(createdUrl);
         assertNotNull(createdUrl.getUrlHash());
