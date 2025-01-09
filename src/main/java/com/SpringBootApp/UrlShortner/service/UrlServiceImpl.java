@@ -24,7 +24,8 @@ public class UrlServiceImpl implements UrlService {
     @Override
     public Mono<UrlDto> getUrl(String shortUrl) throws UrlNotFoundException {
         return urlRepository.findByShortUrl(shortUrl)
-                .map(url -> new UrlDto(url.getLongUrl()));
+                .map(url -> new UrlDto(url.getLongUrl()))
+                .switchIfEmpty(Mono.error(new UrlNotFoundException("URL not found for the given short URL: " + shortUrl)));
     }
 
     @Override
