@@ -1,8 +1,6 @@
 package com.SpringBootApp.UrlShortner.UnitTesting;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.refEq;
-import static org.mockito.Mockito.verify;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,10 +9,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.SpringBootApp.UrlShortner.dto.ErrorDto;
 import com.SpringBootApp.UrlShortner.dto.UrlDto;
 import com.SpringBootApp.UrlShortner.entity.Url;
-import com.SpringBootApp.UrlShortner.exception.GlobalExceptionHandler;
 import com.SpringBootApp.UrlShortner.exception.UrlNotFoundException;
 import com.SpringBootApp.UrlShortner.repository.UrlRepository;
 import com.SpringBootApp.UrlShortner.service.UrlAssembler;
