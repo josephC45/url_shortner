@@ -50,6 +50,50 @@ public class UrlServiceTests {
     }
 
     @Test
+    public void shouldReturnUrlWhenLongUrlExists() {
+        String hash = "t1234";
+        String shortUrl = "http://localhost:8080/t1234";
+        String longUrl = "http://localhost:8080/abcd1234567";
+        Url mockUrl = new Url(hash, shortUrl, longUrl);
+
+        Mockito.when(urlRepository.findByLongUrl(longUrl)).thenReturn(Mono.just(mockUrl));
+        Mono<Url> result = urlService.createUrl(longUrl);
+
+        StepVerifier.create(result)
+                .expectNextMatches(url -> {
+                    assertEquals(mockUrl, url);
+                    return true;
+                })
+                .verifyComplete();
+
+        verify(urlRepository).findByLongUrl(longUrl);
+    }
+
+    @Test
+    public void shouldReturnNewlyCreatedUrlWhenLongUrlDoesNotExist() {
+        String hash = "t1234";
+        String shortUrl = "http://localhost:8080/t1234";
+        String longUrl = "http://localhost:8080/abcd1234567";
+        Url mockUrl = new Url(hash, shortUrl, longUrl);
+
+        Mockito.when(urlRepository.findByLongUrl(longUrl)).thenReturn(Mono.empty());
+        Mockito.when(urlAssembler.assembleUrl(longUrl)).thenReturn(mockUrl);
+        Mockito.when(urlRepository.save(mockUrl)).thenReturn(Mono.just(mockUrl));
+
+        Mono<Url> result = urlService.createUrl(longUrl);
+        StepVerifier.create(result)
+                .expectNextMatches(url -> {
+                    assertEquals(mockUrl, url);
+                    return true;
+                })
+                .verifyComplete();
+
+        verify(urlRepository).findByLongUrl(longUrl);
+        verify(urlAssembler).assembleUrl(longUrl);
+        verify(urlRepository).save(mockUrl);
+    }
+
+    @Test
     public void shouldThrowUrlNotFoundExceptionWhenShortUrlDoesNotExist() {
         String shortUrl = "http://localhost:8080/t1234";
         String exceptionMessage = "URL not found for the given short URL: " + shortUrl;
