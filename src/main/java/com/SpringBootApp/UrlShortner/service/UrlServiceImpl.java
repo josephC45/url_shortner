@@ -39,7 +39,10 @@ public class UrlServiceImpl implements UrlService {
 
     @Override
     public Mono<Void> deleteUrl(String shortUrl) throws UrlNotFoundException {
-        return urlRepository.findByShortUrl(shortUrl)
-                .flatMap(url -> urlRepository.deleteById(url.getId()));
+        return urlRepository.deleteByShortUrl(shortUrl)
+                .flatMap(urlToDeleteFound -> {
+                    if(urlToDeleteFound) return Mono.empty();
+                    else return Mono.error(new UrlNotFoundException("URL not found for the given short URL: " + shortUrl));
+                });
     }
 }
