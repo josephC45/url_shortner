@@ -14,5 +14,5 @@ public interface UrlRepository extends R2dbcRepository<Url, Integer> {
 
     public Mono<Url> findByShortUrl(String shortUrl);
 
-    public Mono<Void> deleteById(Integer id);
+    public Mono<Boolean> deleteByShortUrl(String shortUrl);
 }
