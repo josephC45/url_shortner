@@ -1,6 +1,7 @@
 package com.SpringBootApp.UrlShortner.UnitTesting;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.verify;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -60,5 +61,26 @@ public class UrlServiceTests {
                 .expectErrorMatches(throwable -> throwable instanceof UrlNotFoundException &&
                         throwable.getMessage().contains(exceptionMessage))
                 .verify();
+    }
+
+    @Test
+    public void shouldReturnNothingWhenShortUrlExists() {
+        String shortUrl = "http://localhost:8080/t1234";
+        Mockito.when(urlRepository.deleteByShortUrl(shortUrl)).thenReturn(Mono.just(true));
+        StepVerifier.create(urlService.deleteUrl(shortUrl))
+                .verifyComplete();
+        verify(urlRepository).deleteByShortUrl(shortUrl);
+    }
+
+    @Test
+    public void shouldThrowUrlNotFoundExceptionWhenShortUrlDoesNotExistForDeletion() {
+        String shortUrl = "http://localhost:8080/t1234";
+        String exceptionMessage = "URL not found for the given short URL: " + shortUrl;
+        Mockito.when(urlRepository.deleteByShortUrl(shortUrl)).thenReturn(Mono.just(false));
+        StepVerifier.create(urlService.deleteUrl(shortUrl))
+                .expectErrorMatches(throwable -> throwable instanceof UrlNotFoundException &&
+                        throwable.getMessage().contains(exceptionMessage))
+                .verify();
+        verify(urlRepository).deleteByShortUrl(shortUrl);
     }
 }
