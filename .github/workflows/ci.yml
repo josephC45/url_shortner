@@ -20,6 +20,12 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
   
+      - name: Set up Maven
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          maven-version: '3.9.6'
+
       - name: Run Unit Tests
         run: mvn clean test -Dtest=com.SpringBootApp.UrlShortner.UnitTesting.*
 
