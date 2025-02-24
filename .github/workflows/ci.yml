@@ -20,5 +20,12 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
   
-      - name: Build and Run Tests (Maven)
-        run: mvn clean test
+      - name: Run Unit Tests
+        run: mvn clean test -Dtest=com.SpringBootApp.UrlShortner.UnitTesting.*
+
+      - name: Run Integration Tests
+        run: mvn clean test -Dtest=com.SpringBootApp.UrlShortner.IntegrationTesting.*
+
+      - name: Run E2E Tests
+        run: mvn clean test -Dtest=com.SpringBootApp.UrlShortner.EndToEndTesting.*
+        
