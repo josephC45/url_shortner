@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import com.SpringBootApp.UrlShortner.dto.UrlDto;
@@ -17,7 +18,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Optional;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class RestControllerTests {
 
     @Autowired
@@ -33,7 +35,7 @@ public class RestControllerTests {
 
     @Test
     void shouldReturnOkStatusCodeAndLongUrl_WhenGivenJsonValueOfShortUrl() {
-        String urlRequest = "http://localhost:8080/abcdefg1234567";
+        String urlRequest = "http://localhost:8081/abcdefg1234567";
         Url createdUrl = webTestClient.post()
                 .uri("/api/v1/urls")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -64,7 +66,7 @@ public class RestControllerTests {
 
     @Test
     void shouldReturnNoContentStatusCode_WhenGivenJsonValueOfShortUrlToDelete() {
-        String urlRequest = "http://localhost:8080/abcdefg1234567";
+        String urlRequest = "http://localhost:8081/abcdefg1234567";
         Url createdUrl = webTestClient.post()
                 .uri("/api/v1/urls")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -92,7 +94,7 @@ public class RestControllerTests {
 
     @Test
     void shouldReturnCreatedStatusAndBody_WhenGivenJsonValueOfLongUrl() {
-        String urlRequest = "http://localhost:8080/abcdefg1234567";
+        String urlRequest = "http://localhost:8081/abcdefg1234567";
         Url createdUrl = webTestClient.post()
                 .uri("/api/v1/urls")
                 .contentType(MediaType.APPLICATION_JSON)
