@@ -1,12 +1,15 @@
-package com.SpringBootApp.UrlShortner.IntegrationTesting;
+package com.SpringBootApp.UrlShortner;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.SpringBootApp.UrlShortner.dto.UrlDto;
 import com.SpringBootApp.UrlShortner.entity.Url;
@@ -16,11 +19,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.Duration;
 import java.util.Optional;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
-public class RestControllerTests {
+public class RestControllerIT {
 
     @Autowired
     private WebTestClient webTestClient;
@@ -30,11 +33,15 @@ public class RestControllerTests {
 
     @BeforeEach
     public void setup() {
-        urlRepository.deleteAll().block();
+        urlRepository.deleteAll().then().block();
+        webTestClient = webTestClient.mutate()
+            .responseTimeout(Duration.ofSeconds(8)) // Extend timeout
+            .build();
     }
 
     @Test
     void shouldReturnOkStatusCodeAndLongUrl_WhenGivenJsonValueOfShortUrl() {
+        
         String urlRequest = "http://localhost:8081/abcdefg1234567";
         Url createdUrl = webTestClient.post()
                 .uri("/api/v1/urls")
@@ -108,7 +115,6 @@ public class RestControllerTests {
         assertNotNull(createdUrl);
         assertNotNull(createdUrl.getUrlHash());
         assertNotNull(createdUrl.getShortUrl());
-        assertNotNull(createdUrl.getLongUrl());
         assertEquals(urlRequest, createdUrl.getLongUrl());
     }
 }

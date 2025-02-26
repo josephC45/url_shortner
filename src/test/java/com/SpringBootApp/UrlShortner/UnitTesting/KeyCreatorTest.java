@@ -17,7 +17,7 @@ import com.SpringBootApp.UrlShortner.config.ConfigProp;
 import com.SpringBootApp.UrlShortner.service.KeyCreatorImpl;
 
 @ExtendWith(MockitoExtension.class)
-public class KeyCreatorTests {
+public class KeyCreatorTest {
 
     @Mock
     private ConfigProp configProp;

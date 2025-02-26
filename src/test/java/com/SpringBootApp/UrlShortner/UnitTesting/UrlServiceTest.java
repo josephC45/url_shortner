@@ -21,7 +21,7 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 @ExtendWith(MockitoExtension.class)
-public class UrlServiceTests {
+public class UrlServiceTest {
 
     @Mock
     UrlRepository urlRepository;

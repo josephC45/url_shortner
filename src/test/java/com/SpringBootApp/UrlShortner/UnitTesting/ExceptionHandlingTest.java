@@ -16,7 +16,7 @@ import com.SpringBootApp.UrlShortner.exception.UrlNotFoundException;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-public class ExceptionHandlingTests {
+public class ExceptionHandlingTest {
 
     private GlobalExceptionHandler globalExceptionHandler;
 
