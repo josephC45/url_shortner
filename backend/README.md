@@ -44,13 +44,19 @@ Built using Java, Spring Boot, and R2DBC Postgres, the application supports asyn
 
 ```bash
 ./mvnw spring-boot:run
+```
+
+### Create Jar
 
 ```bash
 ./mvnw clean package
+```
 
+### Create Docker Image and Run Docker Container
 ```bash
 docker build -t api-gateway .
 docker run -p 8080:8080 api-gateway
+```
 
 ---
 

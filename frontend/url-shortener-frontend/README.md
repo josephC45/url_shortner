@@ -1,8 +1,3 @@
----
-
-### `frontend/README.md`
-
-```markdown
 # URL Shortener Frontend – Vue.js
 
 This is the frontend application for the URL Shortener project. Built using Vue.js, it provides users with a clean and responsive interface to shorten URLs and view redirects.
