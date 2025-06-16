@@ -1,0 +1,23 @@
+{
+	"folders": [
+		{
+			"path": "../../../../../../.."
+		},
+		{
+			"path": "../../../../../../../../api-gateway"
+		},
+		{
+			"path": "../../../../../../../../service-registry"
+		},
+		{
+			"path": "../../../../../../../../front_end_urlshortener"
+		}
+	],
+	"settings": {
+		"java.import.maven.disableTestClasspathFlag": true,
+		"boot-java.scan-java-test-sources.on": true,
+		"java.configuration.updateBuildConfiguration": "interactive",
+		"java.dependency.packagePresentation": "hierarchical",
+		"java.compile.nullAnalysis.mode": "disabled"
+	}
+}

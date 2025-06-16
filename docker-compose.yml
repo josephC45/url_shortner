@@ -1,0 +1,63 @@
+
+services:
+  eureka:
+    build: ./eureka-service-registry
+    container_name: eureka-server
+    hostname: eureka
+    ports:
+      - "8761:8761"
+    networks:
+      - urlnet
+  api-gateway:
+    build: ./api-gateway
+    container_name: api-gateway
+    depends_on:
+      - eureka
+      - db
+    ports:
+      - "8080:8080"
+    networks:
+      - urlnet
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka
+  backend:
+    build: ./backend
+    container_name: backend 
+    depends_on:
+      - eureka
+      - api-gateway
+      - db
+    ports:
+      - "8081:8081"
+    networks:
+      - urlnet
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka
+  db:
+    image: postgres:16
+    container_name: my_postgres_db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: my_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - urlnet  
+  frontend:
+    build: ./frontend/url-shortener-frontend
+    container_name: frontend 
+    depends_on:
+      - api-gateway
+    ports:
+      - "4000:90"
+    networks:
+      - urlnet
+
+networks:
+  urlnet:
+volumes:
+  pgdata:

@@ -1,0 +1,34 @@
+server:
+    port: 8080
+    
+spring:
+    main:
+        banner-mode: OFF
+        log-startup-info: false
+    application:
+        name: api-gateway
+    cloud:
+        gateway:
+            discovery:
+                locator:
+                    enabled: true
+                    lower-case-service-id: true
+            routes:
+                - id: backend
+                  uri: lb://backend
+                  predicates: 
+                    - Path=/backend/**
+                  filters:
+                    - StripPrefix=1
+    r2dbc:
+        url: r2dbc:postgresql://db:5432/my_db
+        username: admin
+        password: admin
+app:
+    secretKey: verystrongsupersecurekey12345678 
+    
+eureka:
+    client:
+        service-url:
+            defaultZone: http://localhost:8761/eureka/
+        
