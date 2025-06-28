@@ -76,7 +76,7 @@
 		</dependency>
 		<dependency>
 			<groupId>io.r2dbc</groupId>
-			<artifactId>r2dbc-pool</artifactId>
+			<artifactId>r2dbc-pool</artifactId> <!--TODO Determine if necessary-->
 		</dependency>
 		<dependency>
 			<groupId>org.mapstruct</groupId>

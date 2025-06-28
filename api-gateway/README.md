@@ -44,6 +44,7 @@ This is the backend service for the URL Shortener application, built using Sprin
 ## Setup & Run
 
 ### Configuration
+
 - JWT secret, expiration, and other settings can be found in application.yaml
 
 ### Prerequisites
