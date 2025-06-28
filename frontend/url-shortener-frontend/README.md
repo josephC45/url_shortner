@@ -6,6 +6,7 @@ It provides users with a clean and responsive interface to create an account, lo
 ---
 
 ## Features
+
 - Account creation and Login Forms
 - Input long URLs and generate shortened URLs
 - View last 10 globally generated shortened URLs

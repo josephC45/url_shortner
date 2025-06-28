@@ -1,11 +1,13 @@
 # URL Shortener Project
 
 ## Overview  
+
 This project started as a single-threaded REST API and has evolved into a Full Stack / Distributed Systems project. 
 
 ---
 
-## Features  
+## Features
+
 - **Frontend:** Vue.js, JavaScript  
 - **Backend:** Java, Spring Boot, Aspect-Oriented Programming (AOP), reactive programming, multithreading  
 - **Security:** JWT authentication/authorization, Cookies  
@@ -26,7 +28,8 @@ This project started as a single-threaded REST API and has evolved into a Full S
 
 ---
 
-## Current Work  
+## Current Work
+  
 - Clean up any unnecessary dependencies
 - Add prometheus/grafana to cdc/kafka/redis
 - Add appropriate logging
@@ -34,12 +37,15 @@ This project started as a single-threaded REST API and has evolved into a Full S
 ---
 
 ### Prerequisites
+
 - Docker 
 
-### Installation  
+### Installation
+
 - Clone the repository
 
 ### Running Stack via Docker
+
 ```bash
 docker-compose up
 ```
