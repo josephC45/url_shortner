@@ -1,13 +1,88 @@
 
 services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - urlnet
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    ports:
+      - "9092"
+    networks:
+      - urlnet
+
+  redis:
+    image: redis:7
+    networks:
+      - urlnet
+
+  connect:
+    image: debezium/connect:2.5
+    depends_on:
+      - kafka
+      - db
+    ports:
+      - "8083:8083"
+    environment:
+      BOOTSTRAP_SERVERS: kafka:9092
+      GROUP_ID: "1"
+      CONFIG_STORAGE_TOPIC: my_connect_configs
+      OFFSET_STORAGE_TOPIC: my_connect_offsets
+      STATUS_STORAGE_TOPIC: my_connect_status
+      # Allowing JSON conversion
+      KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      KEY_CONVERTER_SCHEMAS_ENABLE: "false"
+      VALUE_CONVERTER_SCHEMAS_ENABLE: "false"
+      # Plugin path
+      PLUGIN_PATH: /kafka/connect
+    networks:
+      - urlnet
+
+  url-kafka-consumer:
+    build: ./url-kafka-consumer
+    container_name: url-kafka-consumer
+    depends_on:
+      - redis
+      - connect
+    networks:
+      - urlnet
+
+  url-feed-service:
+    build: ./url-feed-service
+    container_name: url-feed-service
+    depends_on:
+      - eureka
+      - api-gateway
+      - redis
+    ports:
+      - "8099"
+    networks:
+      - urlnet  
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka
+      
   eureka:
     build: ./eureka-service-registry
     container_name: eureka-server
     hostname: eureka
     ports:
-      - "8761:8761"
+      - "8761"
     networks:
       - urlnet
+
   api-gateway:
     build: ./api-gateway
     container_name: api-gateway
@@ -15,11 +90,12 @@ services:
       - eureka
       - db
     ports:
-      - "8080:8080"
+      - "8080"
     networks:
       - urlnet
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka
+
   backend:
     build: ./backend
     container_name: backend 
@@ -28,11 +104,12 @@ services:
       - api-gateway
       - db
     ports:
-      - "8081:8081"
+      - "8081"
     networks:
       - urlnet
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka
+
   db:
     image: postgres:16
     container_name: my_postgres_db
@@ -40,20 +117,36 @@ services:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin
       POSTGRES_DB: my_db
-    ports:
-      - "5432:5432"
+    command: >
+      postgres -c wal_level=logical
+               -c max_wal_senders=4
+               -c max_replication_slots=4
     volumes:
       - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
       - pgdata:/var/lib/postgresql/data
     networks:
       - urlnet  
+
   frontend:
     build: ./frontend/url-shortener-frontend
     container_name: frontend 
     depends_on:
       - api-gateway
     ports:
-      - "4000:90"
+      - "4000"
+    networks:
+      - urlnet
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+    depends_on:
+      - frontend
+      - api-gateway
     networks:
       - urlnet
 
