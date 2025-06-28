@@ -1,13 +1,14 @@
 # URL Shortener Frontend – Vue.js
 
-This is the frontend application for the URL Shortener project. Built using Vue.js, it provides users with a clean and responsive interface to shorten URLs and view redirects.
+This is the frontend application for the URL Shortener project. 
+It provides users with a clean and responsive interface to create an account, login, shorten URLs, and see the last 10 globally created Urls.
 
 ---
 
 ## Features
 - Account creation and Login Forms
-- Input long URLs and generate shortened links
-- Redirect via shortened URLs
+- Input long URLs and generate shortened URLs
+- View last 10 globally generated shortened URLs
 - Simple and clean UI
 - Axios-powered API communication
 
@@ -17,6 +18,7 @@ This is the frontend application for the URL Shortener project. Built using Vue.
 
 - Vue.js 3
 - Vue Router
+- Vuex
 - Axios
 - JavaScript (ES6+)
 - Node.js / npm / yarn
@@ -34,8 +36,6 @@ This is the frontend application for the URL Shortener project. Built using Vue.
 npm install
 # or
 yarn install
-
-This template should help get you started developing with Vue 3 in Vite.
 
 ## Project Setup
 

@@ -1,7 +1,7 @@
 # Backend - Reactive & Multithreaded URL Shortener
 
 This project is a high-performance, scalable backend application for shortening URLs. 
-Built using Java, Spring Boot, and R2DBC Postgres, the application supports asynchronous processing, multithreading, and end-to-end testing.
+Built using Java, Spring Boot, and R2DBC-Postgres, the application supports asynchronous processing, multithreading, and end-to-end testing.
 
 ---
 
