@@ -1,0 +1,16 @@
+server:
+    port: 8099
+spring:
+  main:
+    banner-mode: OFF
+    log-startup-info: false
+  application:
+    name: url-feed-service
+  data:
+    redis:
+        host: redis
+        port: 6379
+eureka:
+    client:
+        service-url:
+            defaultZone: http://eureka:8761/eureka/
