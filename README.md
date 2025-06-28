@@ -21,7 +21,8 @@ This project started as a single-threaded REST API and has evolved into a Full S
 ---
 
 ## High-Level Design
-![alt text](./docs/Url_Shortener_HLD.png)
+
+![alt text](docs/URL_Shortener_HLD.png)
 
 ---
 
