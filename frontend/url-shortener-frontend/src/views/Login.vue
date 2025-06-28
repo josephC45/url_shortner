@@ -33,7 +33,7 @@ export default {
         async login() {
             try {
                 const user_cred = JSON.stringify(this.user_credentials)
-                await axios.post('http://localhost:8080/api/v1/auth/login', user_cred, {
+                await axios.post('https://localhost/api/v1/auth/login', user_cred, {
                     headers: {
                         'Content-Type': 'application/json',
                     },

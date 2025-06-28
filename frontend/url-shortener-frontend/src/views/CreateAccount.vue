@@ -37,7 +37,7 @@ export default {
         async createAccount() {
             try {
                 const newAccount = JSON.stringify(this.newAccount)
-                await axios.post('http://localhost:8080/backend/api/v1/account/register', newAccount, {
+                await axios.post('https://localhost/api/v1/account/register', newAccount, {
                     headers: {
                         'Content-Type': 'application/json',
                     }

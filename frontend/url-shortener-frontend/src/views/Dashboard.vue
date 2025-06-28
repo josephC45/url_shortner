@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import axios from 'axios'
+import CachedUrls from './CachedUrls.vue'
 
 const url = ref('')
 const data = ref(null)
@@ -8,7 +9,7 @@ const data = ref(null)
 const postData = async () => {
   try {
     const longUrlJsonPayload = JSON.stringify(url.value)
-    const response = await axios.post('http://localhost:8080/backend/api/v1/urls', longUrlJsonPayload, {
+    const response = await axios.post('https://localhost/api/v1/urls', longUrlJsonPayload, {
       withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
@@ -43,6 +44,7 @@ const postData = async () => {
         <p>{{ data.longUrl }}</p>
       </div>
     </div>
+    <CachedUrls/>
   </div>
 </template>
 
