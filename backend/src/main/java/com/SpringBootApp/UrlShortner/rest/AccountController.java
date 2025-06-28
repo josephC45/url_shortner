@@ -26,9 +26,8 @@ public class AccountController {
             @RequestBody AccountCreationRequestDto accountCreationRequestDto) {
         return accountService.registerUser(accountCreationRequestDto)
                 .map(isNewAccount -> {
-                    return isNewAccount ?
-                        ResponseEntity.ok("Account successfully created") :
-                        ResponseEntity.badRequest().body("Account was not created, it may exist already");
+                    return isNewAccount ? ResponseEntity.ok("Account successfully created")
+                            : ResponseEntity.badRequest().body("Account was not created, it may exist already");
                 });
     }
 }

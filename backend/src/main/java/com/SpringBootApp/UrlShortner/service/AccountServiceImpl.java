@@ -18,7 +18,8 @@ public class AccountServiceImpl implements AccountService {
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
 
-    public AccountServiceImpl(PasswordEncoder passwordEncoder, AccountRepository accountRepository, UserMapper userMapper) {
+    public AccountServiceImpl(PasswordEncoder passwordEncoder, AccountRepository accountRepository,
+            UserMapper userMapper) {
         this.passwordEncoder = passwordEncoder;
         this.accountRepository = accountRepository;
         this.userMapper = userMapper;
@@ -39,13 +40,13 @@ public class AccountServiceImpl implements AccountService {
                     user.setPasswordHash(passwordEncoder.encode(accountCreationRequestDto.getPassword()));
                     user.setRoleType(Role.USER.name());
                     return accountRepository.save(user)
-                        .doOnSuccess(saved -> System.out.println("Saved user: " + saved))
-                        .doOnError(error -> {
-                            System.out.println("Error during save: " + error.getMessage());
-                            error.printStackTrace();
-                        })
-                        .map(saved -> true)
-                        .onErrorReturn(false);
+                            .doOnSuccess(saved -> System.out.println("Saved user: " + saved))
+                            .doOnError(error -> {
+                                System.out.println("Error during save: " + error.getMessage());
+                                error.printStackTrace();
+                            })
+                            .map(saved -> true)
+                            .onErrorReturn(false);
                 });
     }
 

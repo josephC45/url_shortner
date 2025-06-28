@@ -2,6 +2,7 @@ package com.SpringBootApp.UrlShortner.rest;
 
 import java.util.concurrent.TimeUnit;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +14,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 import com.SpringBootApp.UrlShortner.dto.CreatedUrlDto;
 import com.SpringBootApp.UrlShortner.dto.LongUrlDto;
@@ -62,7 +64,10 @@ public class MyRestController {
     }
 
     @DeleteMapping
-    public Mono<ResponseEntity<Void>> deleteUrl(@RequestParam String shortUrl) {
+    public Mono<ResponseEntity<Void>> deleteUrl(@RequestHeader("X-User-Role") String role,
+            @RequestParam String shortUrl) {
+        if (!role.equals("ROLE_ADMIN"))
+            return Mono.just(ResponseEntity.status(HttpStatus.FORBIDDEN).build());
         return urlService.deleteUrl(shortUrl)
                 .then(Mono.just(ResponseEntity.noContent().build()));
     }

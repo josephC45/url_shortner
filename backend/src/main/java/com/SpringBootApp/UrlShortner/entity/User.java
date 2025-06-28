@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @Table("users")
-@NoArgsConstructor
 @Data
+@NoArgsConstructor
 public class User {
 
     @Id
