@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.authentication.UserDetailsRepositoryReactiveAuthenticationManager;
+import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -23,19 +24,22 @@ import com.personal_project.api_gateway.component.JwtServerAuthenticationConvert
 import com.personal_project.api_gateway.service.CustomUserDetailsService;
 
 @Configuration
+@EnableWebFluxSecurity
 public class SecurityConfig {
 
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:4000"));
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(List.of("*"));
-        config.setAllowCredentials(true);
+        CorsConfiguration corsConfig = new CorsConfiguration();
+        corsConfig.setAllowedOrigins(List.of("https://localhost"));
+        corsConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        corsConfig.setAllowedHeaders(List.of("*"));
+        corsConfig.setAllowCredentials(true);
+        corsConfig.setExposedHeaders(List.of("Set-Cookie"));
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
-        return source;
+
+        UrlBasedCorsConfigurationSource corsConfigSource = new UrlBasedCorsConfigurationSource();
+        corsConfigSource.registerCorsConfiguration("/**", corsConfig);
+        return corsConfigSource;
     }
 
     @Bean
@@ -63,17 +67,19 @@ public class SecurityConfig {
             @Qualifier("jwtAuthenticationManager") JwtReactiveAuthenticationManager jwtReactiveAuthenticationManager,
             JwtServerAuthenticationConverter jwtServerAuthenticationConverter) {
 
-        AuthenticationWebFilter filter = new AuthenticationWebFilter(jwtReactiveAuthenticationManager);
-        filter.setServerAuthenticationConverter(jwtServerAuthenticationConverter);
+        AuthenticationWebFilter authWebFilter = new AuthenticationWebFilter(jwtReactiveAuthenticationManager);
+        authWebFilter.setServerAuthenticationConverter(jwtServerAuthenticationConverter);
 
         return http
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)   
+                .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
+                .addFilterAt(authWebFilter, SecurityWebFiltersOrder.AUTHENTICATION)
                 .authorizeExchange(exchanges -> exchanges
                     .pathMatchers("/api/v1/auth/**").permitAll()
                     .pathMatchers("/api/v1/account/**").permitAll()
                     .anyExchange().authenticated())
-                .addFilterAt(filter, SecurityWebFiltersOrder.AUTHENTICATION)
                 .build();
     }
 

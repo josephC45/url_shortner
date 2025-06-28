@@ -24,31 +24,31 @@ public class JwtService {
     }
 
     public String generateToken(String username, String role) {
-        Map<String,Object> claims = new HashMap<>();
+        Map<String, Object> claims = new HashMap<>();
         claims.put("role", role);
         return createToken(username, claims);
     }
-    
-    private String createToken(String username, Map<String,Object> claims) {
+
+    private String createToken(String username, Map<String, Object> claims) {
         long expirationMillis = 1000 * 60 * 60; // 1hr
         return Jwts.builder()
-            .setClaims(claims)
-            .setSubject(username)
-            .setIssuedAt(new Date())
-            .setExpiration(new Date(System.currentTimeMillis() + expirationMillis))
-            .signWith(secretKey, SignatureAlgorithm.HS256)
-            .compact();
+                .setClaims(claims)
+                .setSubject(username)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + expirationMillis))
+                .signWith(secretKey, SignatureAlgorithm.HS256)
+                .compact();
     }
 
     public Claims validateToken(String token) {
         try {
             return Jwts.parserBuilder()
-                .setSigningKey(secretKey)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+                    .setSigningKey(secretKey)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
 
-        } catch(JwtException e){
+        } catch (JwtException e) {
             throw new BadCredentialsException("Invalid JWT", e);
         }
     }

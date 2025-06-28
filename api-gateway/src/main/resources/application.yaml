@@ -17,9 +17,11 @@ spring:
                 - id: backend
                   uri: lb://backend
                   predicates: 
-                    - Path=/backend/**
-                  filters:
-                    - StripPrefix=1
+                    - Path=/api/v1/urls/**
+                - id: url-feed-service
+                  uri: lb://url-feed-service
+                  predicates: 
+                    - Path=/api/v1/feed/recent/**
     r2dbc:
         url: r2dbc:postgresql://db:5432/my_db
         username: admin
@@ -30,5 +32,5 @@ app:
 eureka:
     client:
         service-url:
-            defaultZone: http://localhost:8761/eureka/
+            defaultZone: http://eureka:8761/eureka/
         
