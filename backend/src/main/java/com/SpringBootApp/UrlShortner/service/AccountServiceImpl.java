@@ -1,5 +1,7 @@
 package com.SpringBootApp.UrlShortner.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +19,7 @@ public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
+    private static final Logger logger = LoggerFactory.getLogger(AccountServiceImpl.class);
 
     public AccountServiceImpl(PasswordEncoder passwordEncoder, AccountRepository accountRepository,
             UserMapper userMapper) {
@@ -40,10 +43,9 @@ public class AccountServiceImpl implements AccountService {
                     user.setPasswordHash(passwordEncoder.encode(accountCreationRequestDto.getPassword()));
                     user.setRoleType(Role.USER.name());
                     return accountRepository.save(user)
-                            .doOnSuccess(saved -> System.out.println("Saved user: " + saved))
+                            .doOnSuccess(saved -> logger.info("Saved user: " + saved))
                             .doOnError(error -> {
-                                System.out.println("Error during save: " + error.getMessage());
-                                error.printStackTrace();
+                                logger.info("Error during save: ", error.getMessage(), error);
                             })
                             .map(saved -> true)
                             .onErrorReturn(false);

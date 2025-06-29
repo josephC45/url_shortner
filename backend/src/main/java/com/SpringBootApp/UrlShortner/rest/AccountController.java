@@ -1,5 +1,7 @@
 package com.SpringBootApp.UrlShortner.rest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,6 +18,7 @@ import reactor.core.publisher.Mono;
 public class AccountController {
 
     private final AccountService accountService;
+    private static final Logger logger = LoggerFactory.getLogger(AccountController.class);
 
     public AccountController(AccountService accountService) {
         this.accountService = accountService;
@@ -25,9 +28,13 @@ public class AccountController {
     public Mono<ResponseEntity<String>> createAccount(
             @RequestBody AccountCreationRequestDto accountCreationRequestDto) {
         return accountService.registerUser(accountCreationRequestDto)
-                .map(isNewAccount -> {
-                    return isNewAccount ? ResponseEntity.ok("Account successfully created")
-                            : ResponseEntity.badRequest().body("Account was not created, it may exist already");
+                .flatMap(isNewAccount -> {
+                    return isNewAccount ? 
+                        Mono.fromRunnable(() -> logger.info("Account successfully created"))
+                        .thenReturn(ResponseEntity.ok("Account successfully created"))
+                        : 
+                        Mono.fromRunnable(() -> logger.warn("Account was not created"))
+                        .thenReturn(ResponseEntity.badRequest().body("Account was not created, it may exist already"));
                 });
     }
 }
