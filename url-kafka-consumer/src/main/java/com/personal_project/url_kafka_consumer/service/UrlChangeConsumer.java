@@ -26,7 +26,7 @@ public class UrlChangeConsumer {
     private RedisTemplate<String, UrlRedisDto> redisTemplate;
 
     private static final String REDIS_KEY = "recent_urls";
-    private static final Logger logger = LoggerFactory.getLogger(UrlChangeConsumer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(UrlChangeConsumer.class);
 
     @KafkaListener(topics = "dbserver1.public.urls", groupId = "url-feed-consumer-group")
     public void consume(String message) {
@@ -34,12 +34,12 @@ public class UrlChangeConsumer {
             KafkaPayload kafkaPayload = objectMapper.readValue(message, KafkaPayload.class);
             UrlRedisDto urlForRedis = kafkaUrlToRedisUrlMapper.toUrlRedisDto(kafkaPayload);
 
-            logger.info("Value being sent to redis: " + urlForRedis.toString());
+            LOGGER.info("Value being sent to redis: " + urlForRedis.toString());
 
             redisTemplate.opsForList().leftPush(REDIS_KEY, urlForRedis);
             redisTemplate.opsForList().trim(REDIS_KEY, 0, 9);
         } catch (JsonProcessingException e) {
-            logger.error("Error deserializing message from Kafka", e.getMessage(), e);
+            LOGGER.error("Error deserializing message from Kafka", e.getMessage(), e);
         }
     }
 

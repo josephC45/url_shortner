@@ -16,14 +16,14 @@ import reactor.core.publisher.Flux;
 @RequestMapping("/api/v1/feed/recent")
 public class UrlFeedController {
 
-    private static final Logger logger = LoggerFactory.getLogger(UrlFeedController.class);
-
     @Autowired
     ReactiveRedisTemplate<String, UrlResponseDto> reactiveRedisTemplate;
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(UrlFeedController.class);
+
     @GetMapping
     public Flux<UrlResponseDto> getFeed() {
-        logger.info("Retrieving 10 latest URLs from cache");
+        LOGGER.info("Retrieving 10 latest URLs from cache");
         return reactiveRedisTemplate.opsForList()
             .range("recent_urls", 0, 9);
     }

@@ -18,7 +18,7 @@ import reactor.core.publisher.Mono;
 public class AccountController {
 
     private final AccountService accountService;
-    private static final Logger logger = LoggerFactory.getLogger(AccountController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AccountController.class);
 
     public AccountController(AccountService accountService) {
         this.accountService = accountService;
@@ -30,10 +30,10 @@ public class AccountController {
         return accountService.registerUser(accountCreationRequestDto)
                 .flatMap(isNewAccount -> {
                     return isNewAccount ? 
-                        Mono.fromRunnable(() -> logger.info("Account successfully created"))
+                        Mono.fromRunnable(() -> LOGGER.info("Account successfully created"))
                         .thenReturn(ResponseEntity.ok("Account successfully created"))
                         : 
-                        Mono.fromRunnable(() -> logger.warn("Account was not created"))
+                        Mono.fromRunnable(() -> LOGGER.warn("Account was not created"))
                         .thenReturn(ResponseEntity.badRequest().body("Account was not created, it may exist already"));
                 });
     }

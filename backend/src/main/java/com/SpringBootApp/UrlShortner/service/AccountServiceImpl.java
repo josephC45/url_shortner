@@ -19,7 +19,7 @@ public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
-    private static final Logger logger = LoggerFactory.getLogger(AccountServiceImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AccountServiceImpl.class);
 
     public AccountServiceImpl(PasswordEncoder passwordEncoder, AccountRepository accountRepository,
             UserMapper userMapper) {
@@ -43,9 +43,9 @@ public class AccountServiceImpl implements AccountService {
                     user.setPasswordHash(passwordEncoder.encode(accountCreationRequestDto.getPassword()));
                     user.setRoleType(Role.USER.name());
                     return accountRepository.save(user)
-                            .doOnSuccess(saved -> logger.info("Saved user: " + saved))
+                            .doOnSuccess(saved -> LOGGER.info("Saved user: " + saved))
                             .doOnError(error -> {
-                                logger.info("Error during save: ", error.getMessage(), error);
+                                LOGGER.info("Error during save: ", error.getMessage(), error);
                             })
                             .map(saved -> true)
                             .onErrorReturn(false);

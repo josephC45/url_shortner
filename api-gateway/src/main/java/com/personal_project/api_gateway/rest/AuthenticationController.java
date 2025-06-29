@@ -28,9 +28,9 @@ import reactor.core.publisher.Mono;
 @RequestMapping("/api/v1/auth")
 public class AuthenticationController {
 
-    private static final Logger logger = LoggerFactory.getLogger(AuthenticationController.class);
     private final ReactiveAuthenticationManager reactiveAuthenticationManager;
     private final JwtService jwtService;
+    private static final Logger LOGGER = LoggerFactory.getLogger(AuthenticationController.class);
 
     public AuthenticationController (
         @Qualifier("loginAuthenticationManager") ReactiveAuthenticationManager reactiveAuthenticationManager,
@@ -42,7 +42,7 @@ public class AuthenticationController {
     @PostMapping("/login")
     public Mono<ResponseEntity<AuthResponseDto>> login (ServerHttpResponse response, @RequestBody AuthRequestDto request){
         Authentication authToken = new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword());
-        logger.info("Authenticating user...");
+        LOGGER.info("Authenticating user...");
         return reactiveAuthenticationManager.authenticate(authToken)
             .flatMap(auth -> {
                 String username = auth.getName();
@@ -64,13 +64,13 @@ public class AuthenticationController {
                 AuthResponseDto authResponseDto = new AuthResponseDto(username);
                 response.addCookie(cookie);
 
-                return Mono.fromRunnable(() -> logger.info("User was successfully authenticated"))
+                return Mono.fromRunnable(() -> LOGGER.info("User was successfully authenticated"))
                     .thenReturn(
                         ResponseEntity.ok().body(authResponseDto)
                     );
             })
             .switchIfEmpty(
-                Mono.fromRunnable(() -> logger.warn("Failiure to authenticate user"))
+                Mono.fromRunnable(() -> LOGGER.warn("Failiure to authenticate user"))
                 .thenReturn(
                     ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
                 )

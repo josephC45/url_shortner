@@ -12,17 +12,17 @@ import org.springframework.stereotype.Component;
 @Component
 public class LoggingAspect {
 
-    private static final Logger logger = LoggerFactory.getLogger(LoggingAspect.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LoggingAspect.class);
 
     @Before("execution (* com.SpringBootApp.UrlShortner.service.UrlServiceImpl.*(..))")
     public void logBefore(JoinPoint joinPoint) throws Throwable {
         String methodName = joinPoint.getSignature().getName();
-        logger.info("Entering method: " + methodName);
+        LOGGER.info("Entering method: " + methodName);
     }
 
     @After("execution (* com.SpringBootApp.UrlShortner.service.UrlServiceImpl.*(..))")
     public void logAfter(JoinPoint joinPoint) throws Throwable {
         String methodName = joinPoint.getSignature().getName();
-        logger.info("Exiting method: " + methodName);
+        LOGGER.info("Exiting method: " + methodName);
     }
 }
