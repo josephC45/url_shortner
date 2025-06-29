@@ -66,9 +66,8 @@ public class MyRestController {
     @DeleteMapping
     public Mono<ResponseEntity<Void>> deleteUrl(@RequestHeader("X-User-Role") String role,
             @RequestParam String shortUrl) {
-        if (!role.equals("ROLE_ADMIN"))
-            return Mono.just(ResponseEntity.status(HttpStatus.FORBIDDEN).build());
-        return urlService.deleteUrl(shortUrl)
-                .then(Mono.just(ResponseEntity.noContent().build()));
+        return (!role.equals("ROLE_ADMIN")) ? 
+            Mono.just(ResponseEntity.status(HttpStatus.FORBIDDEN).build()) :
+            urlService.deleteUrl(shortUrl).then(Mono.just(ResponseEntity.noContent().build()));
     }
 }
