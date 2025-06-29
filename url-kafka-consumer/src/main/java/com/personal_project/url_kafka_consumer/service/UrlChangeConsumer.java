@@ -1,5 +1,7 @@
 package com.personal_project.url_kafka_consumer.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -24,16 +26,20 @@ public class UrlChangeConsumer {
     private RedisTemplate<String, UrlRedisDto> redisTemplate;
 
     private static final String REDIS_KEY = "recent_urls";
+    private static final Logger logger = LoggerFactory.getLogger(UrlChangeConsumer.class);
 
     @KafkaListener(topics = "dbserver1.public.urls", groupId = "url-feed-consumer-group")
     public void consume(String message) {
         try {
             KafkaPayload kafkaPayload = objectMapper.readValue(message, KafkaPayload.class);
             UrlRedisDto urlForRedis = kafkaUrlToRedisUrlMapper.toUrlRedisDto(kafkaPayload);
+
+            logger.info("Value being sent to redis: " + urlForRedis.toString());
+
             redisTemplate.opsForList().leftPush(REDIS_KEY, urlForRedis);
             redisTemplate.opsForList().trim(REDIS_KEY, 0, 9);
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            logger.error("Error deserializing message from Kafka", e.getMessage(), e);
         }
     }
 

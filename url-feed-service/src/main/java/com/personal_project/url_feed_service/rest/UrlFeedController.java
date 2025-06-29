@@ -1,5 +1,7 @@
 package com.personal_project.url_feed_service.rest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,11 +16,14 @@ import reactor.core.publisher.Flux;
 @RequestMapping("/api/v1/feed/recent")
 public class UrlFeedController {
 
+    private static final Logger logger = LoggerFactory.getLogger(UrlFeedController.class);
+
     @Autowired
     ReactiveRedisTemplate<String, UrlResponseDto> reactiveRedisTemplate;
 
     @GetMapping
     public Flux<UrlResponseDto> getFeed() {
+        logger.info("Retrieving 10 latest URLs from cache");
         return reactiveRedisTemplate.opsForList()
             .range("recent_urls", 0, 9);
     }

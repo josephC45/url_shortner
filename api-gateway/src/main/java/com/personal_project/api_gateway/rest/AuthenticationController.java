@@ -2,6 +2,8 @@ package com.personal_project.api_gateway.rest;
 
 import java.time.Duration;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -26,6 +28,7 @@ import reactor.core.publisher.Mono;
 @RequestMapping("/api/v1/auth")
 public class AuthenticationController {
 
+    private static final Logger logger = LoggerFactory.getLogger(AuthenticationController.class);
     private final ReactiveAuthenticationManager reactiveAuthenticationManager;
     private final JwtService jwtService;
 
@@ -39,6 +42,7 @@ public class AuthenticationController {
     @PostMapping("/login")
     public Mono<ResponseEntity<AuthResponseDto>> login (ServerHttpResponse response, @RequestBody AuthRequestDto request){
         Authentication authToken = new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword());
+        logger.info("Authenticating user...");
         return reactiveAuthenticationManager.authenticate(authToken)
             .flatMap(auth -> {
                 String username = auth.getName();
@@ -60,11 +64,18 @@ public class AuthenticationController {
                 AuthResponseDto authResponseDto = new AuthResponseDto(username);
                 response.addCookie(cookie);
 
-                return Mono.just(
-                    ResponseEntity.ok()
-                    .body(authResponseDto));
+                return Mono.fromRunnable(() -> logger.info("User was successfully authenticated"))
+                    .thenReturn(
+                        ResponseEntity.ok().body(authResponseDto)
+                    );
             })
-            .switchIfEmpty(Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()));
+            .switchIfEmpty(
+                Mono.fromRunnable(() -> logger.warn("Failiure to authenticate user"))
+                .thenReturn(
+                    ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+                )
+            );
+                
     }
     
 }
