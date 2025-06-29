@@ -30,7 +30,6 @@ This project started as a single-threaded REST API and has evolved into a Full S
 
 ## Current Work
   
-- Clean up any unnecessary dependencies
 - Add prometheus/grafana to cdc/kafka/redis
 - Add appropriate logging
 
