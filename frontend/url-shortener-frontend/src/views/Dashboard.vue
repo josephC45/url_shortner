@@ -5,17 +5,30 @@ import CachedUrls from './CachedUrls.vue'
 
 const url = ref('')
 const data = ref(null)
+const error = ref('')
+
+const verifyForm = () => {
+  error.value = '';
+  if(url.value.trim.length === 0) { 
+    error.value = 'Please enter a valid URL';
+    return false;
+  }
+  return true;
+}
 
 const postData = async () => {
   try {
-    const longUrlJsonPayload = JSON.stringify(url.value)
-    const response = await axios.post('https://localhost/api/v1/urls', longUrlJsonPayload, {
-      withCredentials: true,
-      headers: {
-        'Content-Type': 'application/json',
-      }
-    })
-    data.value = response.data
+    if(verifyForm()) {
+      const longUrlJsonPayload = JSON.stringify(url.value)
+      const response = await axios.post('https://localhost/api/v1/urls', longUrlJsonPayload, {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      })
+      data.value = response.data
+    }
+    else throw new Error("Check form fields and try again");
   } catch (error) {
     console.error('Error posting data:', error)
   }
@@ -25,6 +38,7 @@ const postData = async () => {
 <template>
   <div class="container">
     <form class="form" @submit.prevent="postData">
+      <span v-if="error.length > 0"> {{ error }}</span>
       <input
         v-model="url"
         type="text"
