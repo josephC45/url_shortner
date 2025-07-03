@@ -14,10 +14,14 @@ spring:
                     enabled: true
                     lower-case-service-id: true
             routes:
-                - id: backend
+                - id: url-route
                   uri: lb://backend
                   predicates: 
                     - Path=/api/v1/urls/**
+                - id: account-route
+                  uri: lb://backend
+                  predicates: 
+                    - Path=/api/v1/account/**
                 - id: url-feed-service
                   uri: lb://url-feed-service
                   predicates: 
