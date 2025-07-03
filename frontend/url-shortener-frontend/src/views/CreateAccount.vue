@@ -6,17 +6,14 @@
                 <label for="email">Email:</label>
                 <input type="text" v-model="newAccount.email" placeholder="email">
             </div>
-
             <div>
                 <label for="password">Password:</label>
                 <input type="password" v-model="newAccount.password" placeholder="password">
             </div>
-
             <div>
                 <label for="verify_password">Verify Password:</label>
                 <input type="password" v-model="newAccount.verifyPassword" placeholder="verify password">
             </div>
-
             <button type="submit">Create new account</button>
             <RouterLink to="/login">Cancel</RouterLink>
         </form>
@@ -58,7 +55,7 @@ export default {
             try {
                 if(this.verifyForm()) {
                     const newAccount = JSON.stringify(this.newAccount)
-                    await axios.post('https://localhost/api/v1/account/register', this.newAccount, {
+                    await axios.post('https://localhost/api/v1/account/register', newAccount, {
                         headers: {
                             'Content-Type': 'application/json',
                         }
@@ -66,8 +63,6 @@ export default {
                     this.$router.push('/login')
                 }
                 else throw new Error("Check form fields and try again");
-                
-
             }
             catch(error){
                 console.error('Error creating account: ', error)
