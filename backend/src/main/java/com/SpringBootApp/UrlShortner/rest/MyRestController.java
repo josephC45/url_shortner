@@ -6,8 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -18,11 +18,13 @@ import org.springframework.web.bind.annotation.RequestHeader;
 
 import com.SpringBootApp.UrlShortner.dto.CreatedUrlDto;
 import com.SpringBootApp.UrlShortner.dto.LongUrlDto;
+import com.SpringBootApp.UrlShortner.dto.ShortUrlDto;
 import com.SpringBootApp.UrlShortner.service.UrlService;
 
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
+import jakarta.validation.Valid;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -40,18 +42,18 @@ public class MyRestController {
     }
 
     @GetMapping
-    public Mono<ResponseEntity<LongUrlDto>> getUrl(@RequestParam String shortUrl) {
-        return urlService.getUrl(shortUrl)
+    public Mono<ResponseEntity<LongUrlDto>> getUrl(@Valid @ModelAttribute ShortUrlDto shortUrlDto) {
+        return urlService.getUrl(shortUrlDto)
                 .map(urlDto -> ResponseEntity.ok().body(urlDto))
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public Mono<ResponseEntity<CreatedUrlDto>> createUrl(@RequestBody LongUrlDto longUrl, UriComponentsBuilder ucb) {
+    public Mono<ResponseEntity<CreatedUrlDto>> createUrl(@RequestBody LongUrlDto longUrlDto, UriComponentsBuilder ucb) {
         Mono<ResponseEntity<CreatedUrlDto>> newUrl = null;
         long start = System.nanoTime();
         try {
-            newUrl = urlService.createUrl(longUrl.getLongUrl())
+            newUrl = urlService.createUrl(longUrlDto)
                     .map(createdUrl -> {
                         shortenUrlCounter.increment();
                         UriComponents uriComponents = ucb.path("/api/v1/urls/{id}").buildAndExpand(createdUrl.getId());
@@ -65,9 +67,9 @@ public class MyRestController {
 
     @DeleteMapping
     public Mono<ResponseEntity<Void>> deleteUrl(@RequestHeader("X-User-Role") String role,
-            @RequestParam String shortUrl) {
-        return (!role.equals("ROLE_ADMIN")) ? 
-            Mono.just(ResponseEntity.status(HttpStatus.FORBIDDEN).build()) :
-            urlService.deleteUrl(shortUrl).then(Mono.just(ResponseEntity.noContent().build()));
+            @Valid @ModelAttribute ShortUrlDto shortUrlDto) {
+        return (role.equals("ROLE_ADMIN")) ? 
+            urlService.deleteUrl(shortUrlDto).then(Mono.just(ResponseEntity.noContent().build())) :
+            Mono.just(ResponseEntity.status(HttpStatus.FORBIDDEN).build());
     }
 }

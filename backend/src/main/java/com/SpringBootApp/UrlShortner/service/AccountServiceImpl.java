@@ -32,10 +32,8 @@ public class AccountServiceImpl implements AccountService {
     public Mono<Boolean> registerUser(AccountCreationRequestDto accountCreationRequestDto) {
         return accountRepository.existsByEmail(accountCreationRequestDto.getEmail())
                 .flatMap(exists -> {
-                    if (exists) {
-                        return Mono.just(false);
-                    }
-                    if (!accountCreationRequestDto.getPassword()
+                    if (exists ||
+                            !accountCreationRequestDto.getPassword()
                             .equals(accountCreationRequestDto.getVerifyPassword())) {
                         return Mono.just(false);
                     }
@@ -45,7 +43,7 @@ public class AccountServiceImpl implements AccountService {
                     return accountRepository.save(user)
                             .doOnSuccess(saved -> LOGGER.info("Saved user: " + saved))
                             .doOnError(error -> {
-                                LOGGER.info("Error during save: ", error.getMessage(), error);
+                                LOGGER.error("Error during save: ", error.getMessage(), error);
                             })
                             .map(saved -> true)
                             .onErrorReturn(false);

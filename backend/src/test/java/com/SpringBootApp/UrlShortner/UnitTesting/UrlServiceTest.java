@@ -12,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.SpringBootApp.UrlShortner.dto.CreatedUrlDto;
 import com.SpringBootApp.UrlShortner.dto.LongUrlDto;
+import com.SpringBootApp.UrlShortner.dto.ShortUrlDto;
 import com.SpringBootApp.UrlShortner.entity.Url;
 import com.SpringBootApp.UrlShortner.exception.UrlNotFoundException;
 import com.SpringBootApp.UrlShortner.mapper.UrlMapper;
@@ -45,11 +46,12 @@ public class UrlServiceTest {
 
         Url mockUrl = new Url(hash, shortUrl, longUrl);
         LongUrlDto expectedDto = new LongUrlDto(longUrl);
+        ShortUrlDto shortUrlDto = new ShortUrlDto(shortUrl);
 
         Mockito.when(urlRepository.findByShortUrl(shortUrl)).thenReturn(Mono.just(mockUrl));
         Mockito.when(urlMapper.toLongUrlDto(mockUrl)).thenReturn(expectedDto);
 
-        Mono<LongUrlDto> result = urlService.getUrl(shortUrl);
+        Mono<LongUrlDto> result = urlService.getUrl(shortUrlDto);
 
         StepVerifier.create(result)
                 .expectNextMatches(longUrlDto -> {
@@ -64,12 +66,13 @@ public class UrlServiceTest {
         String shortUrl = "http://localhost:8080/t1234";
         String longUrl = "http://localhost:8080/abcd1234567";
         Url mockUrl = new Url(hash, shortUrl, longUrl);
+        LongUrlDto longUrlDto = new LongUrlDto(longUrl);
         CreatedUrlDto expectedDto = new CreatedUrlDto(1,shortUrl, longUrl);
 
         Mockito.when(urlRepository.findByLongUrl(longUrl)).thenReturn(Mono.just(mockUrl));
         Mockito.when(urlMapper.toCreatedUrlDto(mockUrl)).thenReturn(expectedDto);
 
-        Mono<CreatedUrlDto> result = urlService.createUrl(longUrl);
+        Mono<CreatedUrlDto> result = urlService.createUrl(longUrlDto);
 
         StepVerifier.create(result)
                 .expectNextMatches(url -> {
@@ -88,6 +91,7 @@ public class UrlServiceTest {
         String shortUrl = "http://localhost:8080/t1234";
         String longUrl = "http://localhost:8080/abcd1234567";
         Url mockUrl = new Url(hash, shortUrl, longUrl);
+        LongUrlDto longUrlDto = new LongUrlDto(longUrl);
         CreatedUrlDto expectedDto = new CreatedUrlDto(1,shortUrl, longUrl);
 
         Mockito.when(urlRepository.findByLongUrl(longUrl)).thenReturn(Mono.empty());
@@ -95,7 +99,7 @@ public class UrlServiceTest {
         Mockito.when(urlRepository.save(mockUrl)).thenReturn(Mono.just(mockUrl));
         Mockito.when(urlMapper.toCreatedUrlDto(mockUrl)).thenReturn(expectedDto);
 
-        Mono<CreatedUrlDto> result = urlService.createUrl(longUrl);
+        Mono<CreatedUrlDto> result = urlService.createUrl(longUrlDto);
         StepVerifier.create(result)
                 .expectNextMatches(url -> {
                     assertEquals(expectedDto.getShortUrl(), url.getShortUrl());
@@ -112,10 +116,11 @@ public class UrlServiceTest {
     @Test
     public void shouldThrowUrlNotFoundExceptionWhenShortUrlDoesNotExist() {
         String shortUrl = "http://localhost:8080/t1234";
+        ShortUrlDto shortUrlDto = new ShortUrlDto(shortUrl);
         String exceptionMessage = "URL not found for the given short URL: " + shortUrl;
         Mockito.when(urlRepository.findByShortUrl(shortUrl)).thenReturn(Mono.empty());
 
-        Mono<LongUrlDto> result = urlService.getUrl(shortUrl);
+        Mono<LongUrlDto> result = urlService.getUrl(shortUrlDto);
 
         StepVerifier.create(result)
                 .expectErrorMatches(throwable -> throwable instanceof UrlNotFoundException &&
@@ -126,8 +131,9 @@ public class UrlServiceTest {
     @Test
     public void shouldReturnNothingWhenShortUrlExists() {
         String shortUrl = "http://localhost:8080/t1234";
+        ShortUrlDto shortUrlDto = new ShortUrlDto(shortUrl);
         Mockito.when(urlRepository.deleteByShortUrl(shortUrl)).thenReturn(Mono.just(true));
-        StepVerifier.create(urlService.deleteUrl(shortUrl))
+        StepVerifier.create(urlService.deleteUrl(shortUrlDto))
                 .verifyComplete();
         verify(urlRepository).deleteByShortUrl(shortUrl);
     }
@@ -135,9 +141,10 @@ public class UrlServiceTest {
     @Test
     public void shouldThrowUrlNotFoundExceptionWhenShortUrlDoesNotExistForDeletion() {
         String shortUrl = "http://localhost:8080/t1234";
+        ShortUrlDto shortUrlDto = new ShortUrlDto(shortUrl);
         String exceptionMessage = "URL not found for the given short URL: " + shortUrl;
         Mockito.when(urlRepository.deleteByShortUrl(shortUrl)).thenReturn(Mono.just(false));
-        StepVerifier.create(urlService.deleteUrl(shortUrl))
+        StepVerifier.create(urlService.deleteUrl(shortUrlDto))
                 .expectErrorMatches(throwable -> throwable instanceof UrlNotFoundException &&
                         throwable.getMessage().contains(exceptionMessage))
                 .verify();

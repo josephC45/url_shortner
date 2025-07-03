@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.SpringBootApp.UrlShortner.dto.AccountCreationRequestDto;
 import com.SpringBootApp.UrlShortner.service.AccountService;
 
+import jakarta.validation.Valid;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -26,7 +27,7 @@ public class AccountController {
 
     @PostMapping("/register")
     public Mono<ResponseEntity<String>> createAccount(
-            @RequestBody AccountCreationRequestDto accountCreationRequestDto) {
+            @Valid @RequestBody AccountCreationRequestDto accountCreationRequestDto) {
         return accountService.registerUser(accountCreationRequestDto)
                 .flatMap(isNewAccount -> {
                     return isNewAccount ? 

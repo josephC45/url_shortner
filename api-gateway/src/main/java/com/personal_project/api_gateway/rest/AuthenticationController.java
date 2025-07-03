@@ -22,6 +22,7 @@ import com.personal_project.api_gateway.component.JwtService;
 import com.personal_project.api_gateway.dto.AuthRequestDto;
 import com.personal_project.api_gateway.dto.AuthResponseDto;
 
+import jakarta.validation.Valid;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -40,7 +41,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    public Mono<ResponseEntity<AuthResponseDto>> login (ServerHttpResponse response, @RequestBody AuthRequestDto request){
+    public Mono<ResponseEntity<AuthResponseDto>> login (ServerHttpResponse response, @Valid @RequestBody AuthRequestDto request){
         Authentication authToken = new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword());
         LOGGER.info("Authenticating user...");
         return reactiveAuthenticationManager.authenticate(authToken)

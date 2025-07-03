@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 
 import com.SpringBootApp.UrlShortner.dto.CreatedUrlDto;
 import com.SpringBootApp.UrlShortner.dto.LongUrlDto;
+import com.SpringBootApp.UrlShortner.dto.ShortUrlDto;
 import com.SpringBootApp.UrlShortner.exception.UrlNotFoundException;
 import com.SpringBootApp.UrlShortner.mapper.UrlMapper;
 import com.SpringBootApp.UrlShortner.repository.UrlRepository;
@@ -25,14 +26,16 @@ public class UrlServiceImpl implements UrlService {
     }
 
     @Override
-    public Mono<LongUrlDto> getUrl(String shortUrl) throws UrlNotFoundException {
+    public Mono<LongUrlDto> getUrl(ShortUrlDto shortUrlDto) throws UrlNotFoundException {
+        String shortUrl = shortUrlDto.getShortUrl();
         return urlRepository.findByShortUrl(shortUrl)
                 .switchIfEmpty(Mono.error(new UrlNotFoundException("URL not found for the given short URL: " + shortUrl)))
                 .map(urlMapper::toLongUrlDto);
     }
 
     @Override
-    public Mono<CreatedUrlDto> createUrl(String longUrl) {
+    public Mono<CreatedUrlDto> createUrl(LongUrlDto longUrlDto) {
+        String longUrl = longUrlDto.getLongUrl();
         return urlRepository.findByLongUrl(longUrl)
                 .switchIfEmpty(
                     Mono.fromCallable(() -> urlAssembler.assembleUrl(longUrl))
@@ -43,7 +46,8 @@ public class UrlServiceImpl implements UrlService {
     }
 
     @Override
-    public Mono<Void> deleteUrl(String shortUrl) throws UrlNotFoundException {
+    public Mono<Void> deleteUrl(ShortUrlDto shortUrlDto) throws UrlNotFoundException {
+        String shortUrl = shortUrlDto.getShortUrl();
         return urlRepository.deleteByShortUrl(shortUrl)
                 .flatMap(urlToDeleteFound -> {
                     return (urlToDeleteFound) ?
