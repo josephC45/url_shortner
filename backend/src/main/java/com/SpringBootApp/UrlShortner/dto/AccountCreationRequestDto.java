@@ -1,21 +1,26 @@
 package com.SpringBootApp.UrlShortner.dto;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class AccountCreationRequestDto {
 
-    @NonNull
+    @NotNull
+    @Email
     private String email;
 
-    @NonNull
+    @NotNull
+    @Size(min = 8)
     private String password;
 
-    @NonNull
+    @NotEmpty
     private String verifyPassword;
 }
