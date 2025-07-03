@@ -9,7 +9,7 @@ const error = ref('')
 
 const verifyForm = () => {
   error.value = '';
-  if(url.value.trim.length === 0) { 
+  if(url.value.trim().length === 0) { 
     error.value = 'Please enter a valid URL';
     return false;
   }
