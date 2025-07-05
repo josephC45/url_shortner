@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import com.SpringBootApp.UrlShortner.dto.CreatedUrlDto;
 import com.SpringBootApp.UrlShortner.dto.LongUrlDto;
 import com.SpringBootApp.UrlShortner.dto.ShortUrlDto;
+import com.SpringBootApp.UrlShortner.monitoring.MonitoringService;
 import com.SpringBootApp.UrlShortner.service.UrlService;
 
 import jakarta.validation.Valid;
@@ -27,9 +28,11 @@ import reactor.core.publisher.Mono;
 public class MyRestController {
 
     private final UrlService urlService;
+    private final MonitoringService monitoringService;
 
-    public MyRestController(UrlService urlService) {
+    public MyRestController(UrlService urlService, MonitoringService monitoringService) {
         this.urlService = urlService;
+        this.monitoringService = monitoringService;
     }
 
     @GetMapping
@@ -41,12 +44,13 @@ public class MyRestController {
 
     @PostMapping
     public Mono<ResponseEntity<CreatedUrlDto>> createUrl(@RequestBody LongUrlDto longUrlDto, UriComponentsBuilder ucb) {
-        Mono<ResponseEntity<CreatedUrlDto>> newUrl = urlService.createUrl(longUrlDto)
-            .map(createdUrl -> {
-                UriComponents uriComponents = ucb.path("/api/v1/urls/{id}").buildAndExpand(createdUrl.getId());
-                return ResponseEntity.created(uriComponents.toUri()).body(createdUrl);
-            });
-        return newUrl;
+        return monitoringService.trackLatency("app_create_url_latency",
+            urlService.createUrl(longUrlDto)
+                .map(createdUrl -> {
+                    UriComponents uriComponents = ucb.path("/api/v1/urls/{id}").buildAndExpand(createdUrl.getId());
+                    return ResponseEntity.created(uriComponents.toUri()).body(createdUrl);
+                })
+            );
     }
 
     @DeleteMapping
