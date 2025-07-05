@@ -7,6 +7,7 @@ import com.SpringBootApp.UrlShortner.dto.LongUrlDto;
 import com.SpringBootApp.UrlShortner.dto.ShortUrlDto;
 import com.SpringBootApp.UrlShortner.exception.UrlNotFoundException;
 import com.SpringBootApp.UrlShortner.mapper.UrlMapper;
+import com.SpringBootApp.UrlShortner.monitoring.MonitoringService;
 import com.SpringBootApp.UrlShortner.repository.UrlRepository;
 
 import reactor.core.publisher.Mono;
@@ -18,11 +19,14 @@ public class UrlServiceImpl implements UrlService {
     private final UrlRepository urlRepository;
     private final UrlAssembler urlAssembler;
     private final UrlMapper urlMapper;
+    private final MonitoringService monitoringService;
 
-    public UrlServiceImpl(UrlRepository urlRepository, UrlAssembler urlAssembler, UrlMapper urlMapper) {
+    public UrlServiceImpl(UrlRepository urlRepository, UrlAssembler urlAssembler, 
+    UrlMapper urlMapper, MonitoringService monitoringService) {
         this.urlRepository = urlRepository;
         this.urlAssembler = urlAssembler;
         this.urlMapper = urlMapper;
+        this.monitoringService = monitoringService;
     }
 
     @Override
@@ -41,6 +45,7 @@ public class UrlServiceImpl implements UrlService {
                     Mono.fromCallable(() -> urlAssembler.assembleUrl(longUrl))
                     .subscribeOn(Schedulers.boundedElastic())
                     .flatMap(urlRepository::save)
+                    .doOnSuccess(value -> monitoringService.incrementTotalUrlsShortened())
                 )
                 .map(urlMapper::toCreatedUrlDto);
     }

@@ -149,8 +149,31 @@ services:
       - api-gateway
     networks:
       - urlnet
+  
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    depends_on:
+      - backend
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - urlnet
+  
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+    volumes:
+      - grafanadata:/var/lib/grafana
+    networks:
+      - urlnet
 
 networks:
   urlnet:
 volumes:
   pgdata:
+  grafanadata:

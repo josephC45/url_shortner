@@ -1,7 +1,5 @@
 package com.SpringBootApp.UrlShortner.rest;
 
-import java.util.concurrent.TimeUnit;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -21,9 +19,6 @@ import com.SpringBootApp.UrlShortner.dto.LongUrlDto;
 import com.SpringBootApp.UrlShortner.dto.ShortUrlDto;
 import com.SpringBootApp.UrlShortner.service.UrlService;
 
-import io.micrometer.core.instrument.Counter;
-import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.Timer;
 import jakarta.validation.Valid;
 import reactor.core.publisher.Mono;
 
@@ -32,13 +27,9 @@ import reactor.core.publisher.Mono;
 public class MyRestController {
 
     private final UrlService urlService;
-    private final Counter shortenUrlCounter;
-    private final Timer shortenUrlLatency;
 
-    public MyRestController(UrlService urlService, MeterRegistry meterRegistry) {
+    public MyRestController(UrlService urlService) {
         this.urlService = urlService;
-        this.shortenUrlCounter = meterRegistry.counter("url_shorten_requests_total");
-        this.shortenUrlLatency = meterRegistry.timer("url_shorten_request_latency");
     }
 
     @GetMapping
@@ -50,18 +41,11 @@ public class MyRestController {
 
     @PostMapping
     public Mono<ResponseEntity<CreatedUrlDto>> createUrl(@RequestBody LongUrlDto longUrlDto, UriComponentsBuilder ucb) {
-        Mono<ResponseEntity<CreatedUrlDto>> newUrl = null;
-        long start = System.nanoTime();
-        try {
-            newUrl = urlService.createUrl(longUrlDto)
-                    .map(createdUrl -> {
-                        shortenUrlCounter.increment();
-                        UriComponents uriComponents = ucb.path("/api/v1/urls/{id}").buildAndExpand(createdUrl.getId());
-                        return ResponseEntity.created(uriComponents.toUri()).body(createdUrl);
-                    });
-        } finally {
-            shortenUrlLatency.record(System.nanoTime() - start, TimeUnit.NANOSECONDS);
-        }
+        Mono<ResponseEntity<CreatedUrlDto>> newUrl = urlService.createUrl(longUrlDto)
+            .map(createdUrl -> {
+                UriComponents uriComponents = ucb.path("/api/v1/urls/{id}").buildAndExpand(createdUrl.getId());
+                return ResponseEntity.created(uriComponents.toUri()).body(createdUrl);
+            });
         return newUrl;
     }
 
