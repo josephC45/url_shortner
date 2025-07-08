@@ -24,7 +24,8 @@ public class FeedServiceImpl implements FeedService {
 
     @Override
     public Flux<UrlResponseDto> getLatestUrls() {
-        return monitoringService.trackLatency("app_redis_feed_latency", fetchFromRedis());
+        return fetchFromRedis()
+            .transform(flux -> monitoringService.trackLatency("app_redis_feed_latency", flux));
     }
 
 }

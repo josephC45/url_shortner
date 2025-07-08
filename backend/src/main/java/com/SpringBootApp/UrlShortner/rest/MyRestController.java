@@ -44,13 +44,12 @@ public class MyRestController {
 
     @PostMapping
     public Mono<ResponseEntity<CreatedUrlDto>> createUrl(@RequestBody LongUrlDto longUrlDto, UriComponentsBuilder ucb) {
-        return monitoringService.trackLatency("app_create_url_latency",
-            urlService.createUrl(longUrlDto)
-                .map(createdUrl -> {
-                    UriComponents uriComponents = ucb.path("/api/v1/urls/{id}").buildAndExpand(createdUrl.getId());
-                    return ResponseEntity.created(uriComponents.toUri()).body(createdUrl);
-                })
-            );
+        return urlService.createUrl(longUrlDto)
+            .map(createdUrl -> {
+                UriComponents uriComponents = ucb.path("/api/v1/urls/{id}").buildAndExpand(createdUrl.getId());
+                return ResponseEntity.created(uriComponents.toUri()).body(createdUrl);
+            })
+            .transform(mono -> monitoringService.trackLatency("app_create_url_latency", mono));
     }
 
     @DeleteMapping
