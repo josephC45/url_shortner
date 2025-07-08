@@ -33,6 +33,16 @@ spring:
 app:
     secretKey: verystrongsupersecurekey12345678 
     
+management:
+    endpoints:
+        web:
+            exposure:
+                include: prometheus
+    prometheus:
+        metrics:
+            export:
+                enabled: true
+    
 eureka:
     client:
         service-url:

@@ -69,6 +69,7 @@ public class AuthenticationServiceImpl implements AuthenticationService{
         return new AuthResponseDto(username);
     }
 
+    @Override
     public Mono<AuthResponseDto> authenticateUser (ServerHttpResponse response, AuthRequestDto authRequestDto) {
         LOGGER.info("Authenticating user...");
         return authenticate(authRequestDto)

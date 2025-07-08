@@ -155,6 +155,7 @@ services:
     ports:
       - "9090:9090"
     depends_on:
+      - api-gateway
       - backend
       - url-feed-service
     volumes:

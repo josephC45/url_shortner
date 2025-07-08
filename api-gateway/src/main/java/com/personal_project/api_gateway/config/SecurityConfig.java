@@ -77,6 +77,7 @@ public class SecurityConfig {
                 .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
                 .addFilterAt(authWebFilter, SecurityWebFiltersOrder.AUTHENTICATION)
                 .authorizeExchange(exchanges -> exchanges
+                    .pathMatchers("/actuator/prometheus").permitAll()
                     .pathMatchers("/api/v1/auth/**").permitAll()
                     .pathMatchers("/api/v1/account/**").permitAll()
                     .anyExchange().authenticated())
