@@ -3,7 +3,7 @@
 ## Overview  
 
 This project started as a single-threaded REST API and has evolved into a scalable, high-performance URL shortener
-built with Java, Spring Boot, and a reactive microservices architecture. 
+built with Java, Spring Boot, and a reactive microservices architecture.
 It transforms long URLs into compact links using Base62 encoding, optimized for responsiveness and concurrency.
 
 Key backend components include a non-blocking, multithreaded system using R2DBC with PostgreSQL, enabling efficient asynchronous data access.
@@ -49,6 +49,7 @@ A lightweight, responsive Vue.js frontend offers a seamless user interface, whil
 ### Installation
 
 - Clone the repository
+- A openssl public/private key will need to be generated and placed within the nginx directory to facilitate https
 
 ### Running Stack via Docker
 
@@ -57,10 +58,10 @@ docker-compose up
 ```
 ---
 
-### Future Work / Improvement that will slowly be made 
+### Future Work / Improvements
 
 While this project includes all the core features I initially set out to build, there’s always room for enhancement.
-Once appropriate logging and observability tools are in place, the foundational goals will be complete.
+Once logout, some logging and tests for kafka/redis are in place, the foundational goals will be complete.
 The following improvements are planned for a future iteration:
 
 - Add testing for api-gateway, url-feed-service, and url-kafka-consumer
