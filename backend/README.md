@@ -1,6 +1,6 @@
 # Backend - Reactive & Multithreaded URL Shortener
 
-This project is a high-performance, scalable backend application for shortening URLs. 
+This project is a high-performance, scalable backend application for shortening URLs.
 Built using Java, Spring Boot, and R2DBC-Postgres, the application supports asynchronous processing, multithreading, and end-to-end testing.
 
 ---
@@ -56,6 +56,7 @@ Built using Java, Spring Boot, and R2DBC-Postgres, the application supports asyn
 ```
 
 ### Create Docker Image and Run Docker Container
+
 ```bash
 docker build -t api-gateway .
 docker run -p 8080:8080 api-gateway
@@ -67,6 +68,6 @@ docker run -p 8080:8080 api-gateway
 
 This project uses the following open-source libraries:
 
-- **Spring Boot**: Apache License 2.0 (Spring Boot): https://www.apache.org/licenses/LICENSE-2.0
+- **Spring Boot**: Apache License 2.0 (Spring Boot): <https://www.apache.org/licenses/LICENSE-2.0>
 
-- **RestAssured**: RestAssured License: https://github.com/rest-assured/rest-assured/blob/master/LICENSE
+- **RestAssured**: RestAssured License: <https://github.com/rest-assured/rest-assured/blob/master/LICENSE>

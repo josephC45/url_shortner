@@ -13,10 +13,10 @@ The URL-Kafka_Consumer is an internal service that consumes the URLs pushed to K
 
 ---
 
-##  Tech Stack
+## Tech Stack
 
 - Java
-- Spring Boot 3.5.1 
+- Spring Boot 3.5.1
 - Debezium (CDC)
 - Jackson (JSON)
 - Redis
@@ -26,5 +26,5 @@ The URL-Kafka_Consumer is an internal service that consumes the URLs pushed to K
 ### Prerequisites
 
 - Debezium (CDC)
-- Redis 
+- Redis
 - Docker

@@ -1,6 +1,6 @@
 # URL Shortener Frontend – Vue.js
 
-This is the frontend application for the URL Shortener project. 
+This is the frontend application for the URL Shortener project.
 It provides users with a clean and responsive interface to create an account, login, shorten URLs, and see the last 10 globally created Urls.
 
 ---
@@ -15,7 +15,7 @@ It provides users with a clean and responsive interface to create an account, lo
 
 ---
 
-##  Tech Stack
+## Tech Stack
 
 - Vue.js 3
 - Vue Router

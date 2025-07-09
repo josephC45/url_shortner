@@ -12,10 +12,10 @@ URL-Feed-Service is a REST API that allows users to see the last 10 globally cre
 
 ---
 
-##  Tech Stack
+## Tech Stack
 
 - Java
-- Spring Boot 3.5.1 
+- Spring Boot 3.5.1
 - Jackson (JSON)
 - Redis
 
