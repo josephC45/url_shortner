@@ -1,6 +1,5 @@
 package com.personal_project.url_feed_service.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -12,11 +11,14 @@ import reactor.core.publisher.Flux;
 @Service
 public class FeedServiceImpl implements FeedService {
 
-    @Autowired
-    private ReactiveRedisTemplate<String, UrlResponseDto> reactiveRedisTemplate;
+    private final ReactiveRedisTemplate<String, UrlResponseDto> reactiveRedisTemplate;
+    private final MonitoringService monitoringService;
 
-    @Autowired
-    private MonitoringService monitoringService;
+    public FeedServiceImpl(ReactiveRedisTemplate<String, UrlResponseDto> reactiveRedisTemplate,
+            MonitoringService monitoringService) {
+        this.reactiveRedisTemplate = reactiveRedisTemplate;
+        this.monitoringService = monitoringService;
+    }
 
     private Flux<UrlResponseDto> fetchFromRedis() {
         return reactiveRedisTemplate.opsForList().range("recent_urls", 0, 9);
