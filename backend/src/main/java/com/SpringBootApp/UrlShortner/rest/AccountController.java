@@ -29,13 +29,14 @@ public class AccountController {
     public Mono<ResponseEntity<String>> createAccount(
             @Valid @RequestBody AccountCreationRequestDto accountCreationRequestDto) {
         return accountService.registerUser(accountCreationRequestDto)
-                .flatMap(isNewAccount -> {
-                    return isNewAccount ? 
-                        Mono.fromRunnable(() -> LOGGER.info("Account successfully created"))
-                        .thenReturn(ResponseEntity.ok("Account successfully created"))
-                        : 
-                        Mono.fromRunnable(() -> LOGGER.warn("Account was not created"))
-                        .thenReturn(ResponseEntity.badRequest().body("Account was not created, it may exist already"));
-                });
+            .flatMap(isNewAccount -> {
+                if(isNewAccount) {
+                    LOGGER.info("Account successfully created");
+                    return Mono.just(ResponseEntity.ok("Account successfully created"));
+                } else {
+                    LOGGER.warn("Account was not created");
+                    return Mono.just(ResponseEntity.badRequest().body("Account was not created, it may exist already"));
+                }
+            });
     }
 }

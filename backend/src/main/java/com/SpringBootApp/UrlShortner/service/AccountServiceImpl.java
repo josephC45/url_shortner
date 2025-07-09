@@ -31,29 +31,38 @@ public class AccountServiceImpl implements AccountService {
         this.monitoringService = monitoringService;
     }
 
+    private Mono<Boolean> doesUserExist(AccountCreationRequestDto accountCreationRequestDto){
+        return accountRepository.existsByEmail(accountCreationRequestDto.getEmail())
+            .map(userExists -> userExists || !accountCreationRequestDto.getPassword().equals(accountCreationRequestDto.getVerifyPassword()));
+    }
+
+    private Mono<User> constructUser(AccountCreationRequestDto accountCreationRequestDto) {
+        User user = userMapper.toUser(accountCreationRequestDto);
+        user.setPasswordHash(passwordEncoder.encode(accountCreationRequestDto.getPassword()));
+        user.setRoleType(Role.USER.name());
+        return Mono.just(user);
+    }
+
+    private Mono<Boolean> saveUser(User user) {
+        return accountRepository.save(user)
+            .doOnSuccess(saved -> {
+                LOGGER.info("Saved user: " + saved);
+                monitoringService.incrementTotalAccountsCreated();
+            })
+            .doOnError(error -> {
+                LOGGER.error("Error during save: ", error.getMessage(), error);
+            })
+            .map(saved -> true)
+            .onErrorReturn(false);
+    }
+
     @Override
     public Mono<Boolean> registerUser(AccountCreationRequestDto accountCreationRequestDto) {
-        return accountRepository.existsByEmail(accountCreationRequestDto.getEmail())
-                .flatMap(exists -> {
-                    if (exists ||
-                            !accountCreationRequestDto.getPassword()
-                            .equals(accountCreationRequestDto.getVerifyPassword())) {
-                        return Mono.just(false);
-                    }
-                    User user = userMapper.toUser(accountCreationRequestDto);
-                    user.setPasswordHash(passwordEncoder.encode(accountCreationRequestDto.getPassword()));
-                    user.setRoleType(Role.USER.name());
-                    return accountRepository.save(user)
-                            .doOnSuccess(saved -> {
-                                LOGGER.info("Saved user: " + saved);
-                                monitoringService.incrementTotalAccountsCreated();
-                            })
-                            .doOnError(error -> {
-                                LOGGER.error("Error during save: ", error.getMessage(), error);
-                            })
-                            .map(saved -> true)
-                            .onErrorReturn(false);
-                });
+        return doesUserExist(accountCreationRequestDto)
+            .flatMap(exists -> {
+                if(exists) return Mono.just(false);
+                return constructUser(accountCreationRequestDto).flatMap(this::saveUser);
+            });
     }
 
 }
