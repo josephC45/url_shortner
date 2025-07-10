@@ -3,9 +3,12 @@ package com.personal_project.api_gateway.rest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,6 +35,15 @@ public class AuthenticationController {
         this.monitoringService = monitoringService;
     }
 
+    @GetMapping("/status")
+    public Mono<ResponseEntity<Void>> checkAuthStatus(Authentication authentication) {
+        if (authentication != null && authentication.isAuthenticated()) {
+            return Mono.just(ResponseEntity.ok().build());
+        }
+        return Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
+    }
+
+
     @PostMapping("/login")
     public Mono<ResponseEntity<AuthResponseDto>> login (ServerHttpResponse response, @Valid @RequestBody AuthRequestDto request){
         return authenticationService.authenticateUser(response, request)
@@ -43,6 +55,24 @@ public class AuthenticationController {
                 return Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
             })
             .transform(mono -> monitoringService.trackLatency("app_login_latency", mono));
+    }
+
+    @PostMapping("/logout")
+    public Mono<Void> logout(ServerHttpResponse response) {
+        ResponseCookie expiredCookie = ResponseCookie.from("jwt", "")
+            .httpOnly(true)
+            .secure(true)
+            .sameSite("None")
+            .path("/")
+            .maxAge(0)
+            .build();
+
+        response.beforeCommit(() -> {
+            response.addCookie(expiredCookie);
+            return Mono.empty();
+        });
+        response.setStatusCode(HttpStatus.OK);
+        return response.setComplete();
     }
     
 }

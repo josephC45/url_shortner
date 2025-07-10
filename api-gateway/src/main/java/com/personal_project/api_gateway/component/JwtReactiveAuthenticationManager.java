@@ -26,10 +26,9 @@ public class JwtReactiveAuthenticationManager implements ReactiveAuthenticationM
         try {
             Claims claims = jwtService.validateToken(token);
             String username = claims.getSubject();
+
             String role = claims.get("role", String.class);
-
             List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role));
-
             return Mono.just(new UsernamePasswordAuthenticationToken(username, token, authorities));
             
         } catch (BadCredentialsException e) {
