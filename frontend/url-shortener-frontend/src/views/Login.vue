@@ -52,9 +52,11 @@ export default {
                         headers: {
                             'Content-Type': 'application/json',
                         },
+                        withCredentials: true
                     })
-                    this.updateUsername(this.user_credentials.email)
+                    await axios.get('https://localhost/api/v1/auth/status', { withCredentials: true });
                     this.$router.push('/dashboard')
+                    this.updateUsername(this.user_credentials.email)
                 }
                 else throw new Error("Check form fields and try again");
             }

@@ -15,15 +15,17 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach((to, from, next) => {
-    const isAuthenticated = document.cookie.includes('jwt');
-    if(from.path === '/login' && to.path === '/dashboard' && !isAuthenticated) {
-        next('/login');
-    } 
-    else if(to.path === '/dashboard' && isAuthenticated) {
-      next('/dashboard')
+router.beforeEach(async (to, from, next) => {
+  if (from.path === '/login' && to.path === '/dashboard') {
+    try {
+      await axios.get('https://localhost/api/v1/auth/status', { withCredentials: true });
+      next();
+    } catch (err) {
+      next('/login');
     }
-    else next()
+  } else {
+    next();
+  }
 });
 
 export default router;
