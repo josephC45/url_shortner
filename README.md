@@ -62,7 +62,7 @@ docker-compose up
 ### Future Work / Improvements
 
 While this project includes all the core features I initially set out to build, there’s always room for enhancement.
-Once logout, some logging and tests for kafka/redis are in place, the foundational goals will be complete.
+Once logging and tests for kafka/redis are in place, the foundational goals will be complete.
 The following improvements are planned for a future iteration:
 
 - Add testing for api-gateway, url-feed-service, and url-kafka-consumer
