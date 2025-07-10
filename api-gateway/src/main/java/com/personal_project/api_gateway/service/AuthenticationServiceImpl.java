@@ -73,11 +73,11 @@ public class AuthenticationServiceImpl implements AuthenticationService{
     public Mono<AuthResponseDto> authenticateUser (ServerHttpResponse response, AuthRequestDto authRequestDto) {
         LOGGER.info("Authenticating user...");
         return authenticate(authRequestDto)
-            .flatMap(authenticatedUser -> {
+            .map(authenticatedUser -> {
                 String jwt = createJWT(authenticatedUser);
                 constructAndAddResponseCookie(response, jwt);
                 LOGGER.info("User was successfully authenticated");
-                return Mono.just(constructResponseDto(authenticatedUser));
+                return constructResponseDto(authenticatedUser);
             })
             .switchIfEmpty(Mono.error(new BadCredentialsException("Authentication failed")));
     }
