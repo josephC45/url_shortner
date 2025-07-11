@@ -62,6 +62,7 @@ public class AuthenticationServiceImpl implements AuthenticationService{
             .maxAge(Duration.ofHours(1))
             .build();
         response.addCookie(cookie);
+        LOGGER.debug("JWT added to response cookie");
     }
 
     private AuthResponseDto constructResponseDto(Authentication authenticatedUser) {

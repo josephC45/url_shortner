@@ -1,5 +1,7 @@
 package com.SpringBootApp.UrlShortner.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.SpringBootApp.UrlShortner.dto.CreatedUrlDto;
@@ -20,6 +22,7 @@ public class UrlServiceImpl implements UrlService {
     private final UrlAssembler urlAssembler;
     private final UrlMapper urlMapper;
     private final MonitoringService monitoringService;
+    private static final Logger LOGGER = LoggerFactory.getLogger(UrlServiceImpl.class);
 
     public UrlServiceImpl(UrlRepository urlRepository, UrlAssembler urlAssembler, 
     UrlMapper urlMapper, MonitoringService monitoringService) {
@@ -45,7 +48,10 @@ public class UrlServiceImpl implements UrlService {
                     Mono.fromCallable(() -> urlAssembler.assembleUrl(longUrl))
                     .subscribeOn(Schedulers.boundedElastic())
                     .flatMap(urlRepository::save)
-                    .doOnSuccess(value -> monitoringService.incrementTotalUrlsShortened())
+                    .doOnSuccess(value -> {
+                        LOGGER.debug("URL successfully created");
+                        monitoringService.incrementTotalUrlsShortened();
+                    })
                 )
                 .map(urlMapper::toCreatedUrlDto);
     }

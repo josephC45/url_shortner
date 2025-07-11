@@ -6,6 +6,8 @@ import java.util.Map;
 
 import javax.crypto.SecretKey;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Component;
 
@@ -18,6 +20,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 public class JwtService {
 
     private final SecretKey secretKey;
+    private static final Logger LOGGER = LoggerFactory.getLogger(JwtService.class);
 
     public JwtService(SecretKey secretKey) {
         this.secretKey = secretKey;
@@ -26,6 +29,7 @@ public class JwtService {
     public String generateToken(String username, String role) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", role);
+        LOGGER.debug("Generating JWT");
         return createToken(username, claims);
     }
 
@@ -40,7 +44,8 @@ public class JwtService {
                 .compact();
     }
 
-    public Claims validateToken(String token) {
+    public Claims validateToken(String token) throws BadCredentialsException {
+        LOGGER.debug("Validating JWT");
         try {
             return Jwts.parserBuilder()
                     .setSigningKey(secretKey)
@@ -49,6 +54,7 @@ public class JwtService {
                     .getBody();
 
         } catch (JwtException e) {
+            LOGGER.error("Invalid JWT");
             throw new BadCredentialsException("Invalid JWT", e);
         }
     }

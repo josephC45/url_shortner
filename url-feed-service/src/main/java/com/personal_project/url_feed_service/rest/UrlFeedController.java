@@ -1,7 +1,5 @@
 package com.personal_project.url_feed_service.rest;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,15 +15,12 @@ public class UrlFeedController {
 
     private final FeedService feedService;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(UrlFeedController.class);
-
     public UrlFeedController(FeedService feedService) {
         this.feedService = feedService;
     }
 
     @GetMapping
     public Flux<UrlResponseDto> getFeed() {
-        LOGGER.info("Retrieving 10 latest URLs from cache");
         return feedService.getLatestUrls();
     }
 

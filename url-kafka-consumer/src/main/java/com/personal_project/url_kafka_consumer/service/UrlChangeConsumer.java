@@ -34,15 +34,16 @@ public class UrlChangeConsumer {
             KafkaPayload kafkaPayload = objectMapper.readValue(message, KafkaPayload.class);
             return kafkaUrlToRedisUrlMapper.toUrlRedisDto(kafkaPayload);
         } catch (JsonProcessingException e) {
-            LOGGER.error("Error deserializing message from Kafka", e.getMessage(), e);
+            LOGGER.warn("Error deserializing message from Kafka", e.getMessage(), e);
             return null;
         }
     }
 
     private void cacheToRedis(UrlRedisDto urlRedisDto) {
-        LOGGER.info("Value being sent to redis: " + urlRedisDto.toString());
+        LOGGER.debug("Value being sent to redis: " + urlRedisDto.toString());
         redisTemplate.opsForList().leftPush(REDIS_KEY, urlRedisDto);
         redisTemplate.opsForList().trim(REDIS_KEY, 0, 9);
+        LOGGER.debug("Redis trimmed to latest 10 URLs created");
     }
 
     @KafkaListener(topics = "dbserver1.public.urls", groupId = "url-feed-consumer-group")

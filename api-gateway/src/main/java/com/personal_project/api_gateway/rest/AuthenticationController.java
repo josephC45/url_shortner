@@ -38,8 +38,10 @@ public class AuthenticationController {
     @GetMapping("/status")
     public Mono<ResponseEntity<Void>> checkAuthStatus(Authentication authentication) {
         if (authentication != null && authentication.isAuthenticated()) {
+            LOGGER.info("Request was authenticated, check was successful");
             return Mono.just(ResponseEntity.ok().build());
         }
+        LOGGER.warn("Request was unauthenticated, check was unsuccessful");
         return Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
     }
 
@@ -59,6 +61,7 @@ public class AuthenticationController {
 
     @PostMapping("/logout")
     public Mono<Void> logout(ServerHttpResponse response) {
+        LOGGER.info("Logging user out");
         ResponseCookie expiredCookie = ResponseCookie.from("jwt", "")
             .httpOnly(true)
             .secure(true)
@@ -71,6 +74,7 @@ public class AuthenticationController {
             response.addCookie(expiredCookie);
             return Mono.empty();
         });
+        LOGGER.info("User successfully logged out");
         response.setStatusCode(HttpStatus.OK);
         return response.setComplete();
     }

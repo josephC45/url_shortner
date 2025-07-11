@@ -1,5 +1,7 @@
 package com.personal_project.url_feed_service.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +15,7 @@ public class FeedServiceImpl implements FeedService {
 
     private final ReactiveRedisTemplate<String, UrlResponseDto> reactiveRedisTemplate;
     private final MonitoringService monitoringService;
+    private static final Logger LOGGER = LoggerFactory.getLogger(FeedServiceImpl.class);
 
     public FeedServiceImpl(ReactiveRedisTemplate<String, UrlResponseDto> reactiveRedisTemplate,
             MonitoringService monitoringService) {
@@ -21,7 +24,8 @@ public class FeedServiceImpl implements FeedService {
     }
 
     private Flux<UrlResponseDto> fetchFromRedis() {
-        return reactiveRedisTemplate.opsForList().range("recent_urls", 0, 9);
+        return reactiveRedisTemplate.opsForList().range("recent_urls", 0, 9)
+            .doOnComplete(() -> LOGGER.debug("Successfully fetched latest URLs from Redis"));
     }
 
     @Override
