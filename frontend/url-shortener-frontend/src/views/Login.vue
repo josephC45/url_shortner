@@ -54,7 +54,6 @@ export default {
                         },
                         withCredentials: true
                     })
-                    await axios.get('https://localhost/api/v1/auth/status', { withCredentials: true });
                     this.$router.push('/dashboard')
                     this.updateUsername(this.user_credentials.email)
                 }
