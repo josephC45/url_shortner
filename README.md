@@ -65,9 +65,7 @@ docker-compose up
 ### Future Work / Improvements
 
 While this project includes all the core features I initially set out to build, there’s always room for enhancement.
-Once tests for kafka/redis are in place, the foundational goals will be complete.
 The following improvements are planned for a future iteration:
 
-- Add testing for api-gateway, url-feed-service, and url-kafka-consumer
 - Implement Server-Sent Events (SSE) to stream the 10 most recent URLs from Redis, replacing the current REST-based approach
 - Improve the frontend UI/UX (though this was not the primary focus of the project)
