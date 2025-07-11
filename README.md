@@ -15,14 +15,16 @@ These events are consumed and cached in Redis, allowing the frontend to display 
 The application follows a microservices architecture, leveraging Eureka for service discovery
 and Feign for inter-service communication, simplifying HTTP client implementation and enabling dynamic service resolution.
 
-A lightweight, responsive Vue.js frontend offers a seamless user interface, while Aspect-Oriented Programming (AOP) ensures consistent logging and observability across services. The project is fully containerized with Docker, and CI/CD pipelines are implemented using GitHub Actions to enable rapid, reliable deployments.
+A lightweight, responsive Vue.js frontend delivers a seamless user interface. I was initially using AOP; however, after making the application reactive, SLF4J and Logback were chosen for logging. Application monitoring and visualization are implemented with Micrometer, Prometheus, and Grafana, providing robust observability across services.
+
+The entire project is containerized with Docker, and CI/CD pipelines are set up with GitHub Actions to support fast, reliable deployments.
 
 ---
 
 ## Features
 
 - **Frontend:** Vue.js, JavaScript  
-- **Backend:** Java, Spring Boot, Aspect-Oriented Programming (AOP), reactive programming, multithreading  
+- **Backend:** Java, Spring Boot, reactive programming, multithreading  
 - **Security:** JWT authentication/authorization, Cookies  
 - **Service Discovery:** Enables dynamic discovery of microservices for scalable deployment (Eureka)
 - **API Gateway:** Centralized routing and request handling, including authentication, rate limiting, and load balancing (Feign)
@@ -32,6 +34,7 @@ A lightweight, responsive Vue.js frontend offers a seamless user interface, whil
 - **Message Broker:** Kafka
 - **Caching:** Redis
 - **Containerization:** Docker  
+- **Logging:** Slf4j, Logback, Micrometer
 
 ---
 
@@ -62,7 +65,7 @@ docker-compose up
 ### Future Work / Improvements
 
 While this project includes all the core features I initially set out to build, there’s always room for enhancement.
-Once logging and tests for kafka/redis are in place, the foundational goals will be complete.
+Once tests for kafka/redis are in place, the foundational goals will be complete.
 The following improvements are planned for a future iteration:
 
 - Add testing for api-gateway, url-feed-service, and url-kafka-consumer
