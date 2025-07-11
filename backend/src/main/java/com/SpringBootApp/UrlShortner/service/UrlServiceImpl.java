@@ -33,7 +33,7 @@ public class UrlServiceImpl implements UrlService {
     }
 
     @Override
-    public Mono<LongUrlDto> getUrl(ShortUrlDto shortUrlDto) throws UrlNotFoundException {
+    public Mono<LongUrlDto> getUrl(ShortUrlDto shortUrlDto) {
         String shortUrl = shortUrlDto.getShortUrl();
         return urlRepository.findByShortUrl(shortUrl)
                 .switchIfEmpty(Mono.error(new UrlNotFoundException("URL not found for the given short URL: " + shortUrl)))
@@ -57,7 +57,7 @@ public class UrlServiceImpl implements UrlService {
     }
 
     @Override
-    public Mono<Void> deleteUrl(ShortUrlDto shortUrlDto) throws UrlNotFoundException {
+    public Mono<Void> deleteUrl(ShortUrlDto shortUrlDto) {
         String shortUrl = shortUrlDto.getShortUrl();
         return urlRepository.deleteByShortUrl(shortUrl)
                 .flatMap(urlToDeleteFound -> {

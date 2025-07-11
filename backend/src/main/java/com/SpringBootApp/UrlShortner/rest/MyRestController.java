@@ -38,8 +38,7 @@ public class MyRestController {
     @GetMapping
     public Mono<ResponseEntity<LongUrlDto>> getUrl(@Valid @ModelAttribute ShortUrlDto shortUrlDto) {
         return urlService.getUrl(shortUrlDto)
-                .map(urlDto -> ResponseEntity.ok().body(urlDto))
-                .defaultIfEmpty(ResponseEntity.notFound().build());
+                .map(longUrlDto -> ResponseEntity.ok().body(longUrlDto));
     }
 
     @PostMapping
@@ -55,8 +54,9 @@ public class MyRestController {
     @DeleteMapping
     public Mono<ResponseEntity<Void>> deleteUrl(@RequestHeader("X-User-Role") String role,
             @Valid @ModelAttribute ShortUrlDto shortUrlDto) {
-        return (role.equals("ROLE_ADMIN")) ? 
-            urlService.deleteUrl(shortUrlDto).then(Mono.just(ResponseEntity.noContent().build())) :
-            Mono.just(ResponseEntity.status(HttpStatus.FORBIDDEN).build());
+        if(!role.equals("ROLE_ADMIN")) {
+            return Mono.just(ResponseEntity.status(HttpStatus.FORBIDDEN).build());
+        }
+        return urlService.deleteUrl(shortUrlDto).thenReturn(ResponseEntity.noContent().build());
     }
 }
