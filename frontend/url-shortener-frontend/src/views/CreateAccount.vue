@@ -36,13 +36,14 @@ export default {
         verifyForm() {
             this.error = '';
             const { email, password, verifyPassword } = this.newAccount;
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const emailRegex = /^[A-Za-z\d._%+-]+@[A-Za-z\d.-]+\.[A-Za-z]{2,}$/;
+            const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*_+=:?])[A-Za-z0-9!@#$%^&*_+=:?]{16,32}$/;
             if (!email || !emailRegex.test(email)) {
                 this.error = 'Please enter a valid email address.';
                 return false;
             }
-            if (!password || password.length < 8) {
-                this.error = 'Password must be at least 8 characters.';
+            if (!password || !passwordRegex.test(password)) {
+                this.error = 'Password must be at least 16 characters.';
                 return false;
             }
             if (password !== verifyPassword) {
