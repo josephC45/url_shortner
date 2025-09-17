@@ -17,21 +17,22 @@ spring:
                 - id: url-route
                   uri: lb://backend
                   predicates: 
-                    - Path=/api/v1/urls/**
+                    - Path=${BACKEND_URL_PATH}
                 - id: account-route
                   uri: lb://backend
                   predicates: 
-                    - Path=/api/v1/account/**
+                    - Path=${BACKEND_ACC_PATH}
                 - id: url-feed-service
                   uri: lb://url-feed-service
                   predicates: 
-                    - Path=/api/v1/feed/recent/**
+                    - Path=${FEED_PATH_URL}
     r2dbc:
-        url: r2dbc:postgresql://db:5432/my_db
-        username: admin
-        password: admin
+        url: ${DB_URL}
+        username: ${DB_USERNAME} 
+        password: ${DB_PASSWORD}
 app:
-    secretKey: verystrongsupersecurekey12345678 
+    secretKey: ${MY_SECRET_KEY} 
+    api-key: ${MY_API_KEY}
     
 management:
     endpoints:
@@ -46,5 +47,5 @@ management:
 eureka:
     client:
         service-url:
-            defaultZone: http://eureka:8761/eureka/
+            defaultZone: ${SERVICE_DISCOVERY_URL}
         

@@ -3,8 +3,8 @@ services:
   zookeeper:
     image: confluentinc/cp-zookeeper:7.5.0
     environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
+      - ZOOKEEPER_CLIENT_PORT=2181
+      - ZOOKEEPER_TICK_TIME=2000
     networks:
       - urlnet
 
@@ -13,11 +13,11 @@ services:
     depends_on:
       - zookeeper
     environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      - KAFKA_BROKER_ID=1
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_ADVERTISED_LISTENERS=${KAFKA_ADVERTISED_LISTENERS}
+      - KAFKA_LISTENERS=${KAFKA_LISTENERS}
+      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
     ports:
       - "9092"
     networks:
@@ -36,18 +36,18 @@ services:
     ports:
       - "8083:8083"
     environment:
-      BOOTSTRAP_SERVERS: kafka:9092
-      GROUP_ID: "1"
-      CONFIG_STORAGE_TOPIC: my_connect_configs
-      OFFSET_STORAGE_TOPIC: my_connect_offsets
-      STATUS_STORAGE_TOPIC: my_connect_status
-      # Allowing JSON conversion
-      KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
-      VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
-      KEY_CONVERTER_SCHEMAS_ENABLE: "false"
-      VALUE_CONVERTER_SCHEMAS_ENABLE: "false"
-      # Plugin path
-      PLUGIN_PATH: /kafka/connect
+      - BOOTSTRAP_SERVERS=${KAFKA_BOOTSTRAP_SERVER}
+      - GROUP_ID="1"
+      - CONFIG_STORAGE_TOPIC=my_connect_configs
+      - OFFSET_STORAGE_TOPIC=my_connect_offsets
+      - STATUS_STORAGE_TOPIC=my_connect_status
+        # Allowing JSON conversion
+      - KEY_CONVERTER=org.apache.kafka.connect.json.JsonConverter
+      - VALUE_CONVERTER=org.apache.kafka.connect.json.JsonConverter
+      - KEY_CONVERTER_SCHEMAS_ENABLE="false"
+      - VALUE_CONVERTER_SCHEMAS_ENABLE="false"
+        # Plugin path
+      - PLUGIN_PATH=/kafka/connect
     networks:
       - urlnet
 
@@ -59,6 +59,8 @@ services:
       - connect
     networks:
       - urlnet
+    environment:
+      - BOOTSTRAP_SERVERS=${KAFKA_BOOTSTRAP_SERVER}
 
   url-feed-service:
     build: ./url-feed-service
@@ -72,7 +74,9 @@ services:
     networks:
       - urlnet  
     environment:
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka
+      - SERVICE_DISCOVERY_URL=${SERVICE_DISCOVERY_URL}
+      - MY_API_KEY=${MY_API_KEY}
+      - MY_SECRET_KEY=${MY_SECRET_KEY}
       
   eureka:
     build: ./eureka-service-registry
@@ -82,6 +86,8 @@ services:
       - "8761"
     networks:
       - urlnet
+    environment:
+      - SERVICE_DISCOVERY_URL=${SERVICE_DISCOVERY_URL}
 
   api-gateway:
     build: ./api-gateway
@@ -94,7 +100,15 @@ services:
     networks:
       - urlnet
     environment:
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka
+      - BACKEND_URL_PATH=${BACKEND_URL_PATH}
+      - BACKEND_ACC_PATH=${BACKEND_ACC_PATH}
+      - FEED_PATH_URL=${FEED_PATH_URL}
+      - DB_URL=${DB_URL}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - SERVICE_DISCOVERY_URL=${SERVICE_DISCOVERY_URL}
+      - MY_API_KEY=${MY_API_KEY}
+      - MY_SECRET_KEY=${MY_SECRET_KEY}
 
   backend:
     build: ./backend
@@ -108,15 +122,22 @@ services:
     networks:
       - urlnet
     environment:
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka
+      - DB_URL=${DB_URL}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - SERVICE_DISCOVERY_URL=${SERVICE_DISCOVERY_URL}
+      - BASE_CONVERSION=${BASE_CONVERSION}
+      - BASE_SHORT_URL=${BASE_SHORT_URL}
+      - MY_API_KEY=${MY_API_KEY}
+      - MY_SECRET_KEY=${MY_SECRET_KEY}
 
   db:
     image: postgres:16
     container_name: my_postgres_db
     environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin
-      POSTGRES_DB: my_db
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
     command: >
       postgres -c wal_level=logical
                -c max_wal_senders=4

@@ -22,4 +22,7 @@ management:
 eureka:
     client:
         service-url:
-            defaultZone: http://eureka:8761/eureka/
+            defaultZone: ${SERVICE_DISCOVERY_URL}
+app:
+    secretKey: ${MY_SECRET_KEY}
+    api-key: ${MY_API_KEY}

@@ -7,9 +7,9 @@ spring:
     application:
         name: backend
     r2dbc:
-        url: r2dbc:postgresql://db:5432/my_db
-        username: admin
-        password: admin
+        url: ${DB_URL} 
+        username: ${DB_USERNAME}
+        password: ${DB_PASSWORD}
 logging:
     level:
         io:
@@ -32,7 +32,9 @@ management:
 eureka:
     client:
         service-url:
-            defaultZone: http://eureka:8761/eureka/
+            defaultZone: ${SERVICE_DISCOVERY_URL}
 app:
-    baseConversion: 62
-    shortUrlBase: http://localhost:8081/
+    baseConversion: ${BASE_CONVERSION}
+    shortUrlBase: ${BASE_SHORT_URL}
+    secretKey: ${MY_SECRET_KEY}
+    api-key: ${MY_API_KEY}
