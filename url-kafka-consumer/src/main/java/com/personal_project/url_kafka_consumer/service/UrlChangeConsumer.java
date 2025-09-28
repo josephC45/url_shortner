@@ -34,7 +34,7 @@ public class UrlChangeConsumer {
             KafkaPayload kafkaPayload = objectMapper.readValue(message, KafkaPayload.class);
             return kafkaUrlToRedisUrlMapper.toUrlRedisDto(kafkaPayload);
         } catch (JsonProcessingException e) {
-            LOGGER.warn("Error deserializing message from Kafka", e.getMessage(), e);
+            LOGGER.warn("Error deserializing message from Kafka {}, {}", e.getMessage(), e);
             return null;
         }
     }

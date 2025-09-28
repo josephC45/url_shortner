@@ -2,6 +2,7 @@ package com.SpringBootApp.UrlShortner.dto;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 
 @Data
@@ -9,5 +10,6 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class ErrorDto {
 
+    @NotEmpty
     private String errorMessage;
 }
