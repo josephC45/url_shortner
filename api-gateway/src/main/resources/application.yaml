@@ -18,14 +18,20 @@ spring:
                   uri: lb://backend
                   predicates: 
                     - Path=${BACKEND_URL_PATH}
+                  filters:
+                    - AddRequestHeader=X-Internal-API-Key, ${MY_API_KEY}
                 - id: account-route
                   uri: lb://backend
                   predicates: 
                     - Path=${BACKEND_ACC_PATH}
+                  filters:
+                    - AddRequestHeader=X-Internal-API-Key, ${MY_API_KEY}
                 - id: url-feed-service
                   uri: lb://url-feed-service
                   predicates: 
                     - Path=${FEED_PATH_URL}
+                  filters:
+                    - AddRequestHeader=X-Internal-API-Key, ${MY_API_KEY}
     r2dbc:
         url: ${DB_URL}
         username: ${DB_USERNAME} 
