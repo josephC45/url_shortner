@@ -1,13 +1,13 @@
 # API Gateway
 
-This is the backend service for the URL Shortener application, built using Spring Boot. It serves as an API Gateway, handling all incoming requests, delegating them to internal services, and managing user authentication using JWT (JSON Web Tokens).
+Handle incoming requests from frontend (verifying with appropriate security headers and cors), delegating them to other backend services, and managing user authentication using JWT (JSON Web Tokens).
 
 ---
 
 ## Features
 
 - Centralized API Gateway using Spring Boot
-- Redirection logic
+- Spring Security Web Filter Chain (Including security headers, cors settings and applying api-key to propagate downstream)
 - JWT-based authentication and authorization
 - Token generation and validation
 - RESTful endpoints
@@ -22,6 +22,7 @@ This is the backend service for the URL Shortener application, built using Sprin
 - Spring Security
 - JSON Web Token (JWT)
 - Maven
+- Slf4j
 - Docker (optional)
 
 ---
@@ -31,6 +32,8 @@ This is the backend service for the URL Shortener application, built using Sprin
 - **Login endpoint** issues a JWT on successful authentication.
 - JWT is required for protected endpoints (e.g., creating or retrieving shortened URLs).
 - Middleware validates token authenticity and extracts user context.
+
+- **Logout endpoint** logs out user (expires persistent cookie)
 
 ### Example Workflow
 
@@ -45,7 +48,7 @@ This is the backend service for the URL Shortener application, built using Sprin
 
 ### Configuration
 
-- JWT secret, expiration, and other settings can be found in application.yaml
+- env, application.yaml and docker-compose files
 
 ### Prerequisites
 
@@ -55,14 +58,4 @@ This is the backend service for the URL Shortener application, built using Sprin
 
 ### Local Development
 
-```bash
-./mvnw spring-boot:run
-
-```bash
-./mvnw clean package
-
-```bash
-docker build -t api-gateway .
-docker run -p 8080:8080 api-gateway
-
-
+- Done primarily by spinning up docker container via docker-compose file / docker desktop

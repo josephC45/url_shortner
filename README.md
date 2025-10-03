@@ -25,7 +25,7 @@ The entire project is containerized with Docker, and CI/CD pipelines are set up 
 
 - **Frontend:** Vue.js, JavaScript  
 - **Backend:** Java, Spring Boot, reactive programming, multithreading  
-- **Security:** JWT authentication/authorization, Cookies, Input Validation, Output encoding, secure coding principles from OWASP and Tanya Janca's books (Alice and Bob Learn Application Security/Secure Coding).
+- **Security:** Security Headers, JWT authentication/authorization, Cookies, Input/Output Validation, Output encoding, secure coding principles from OWASP and Tanya Janca's books (Alice and Bob Learn Application Security/Secure Coding).
 - **Service Discovery:** Enables dynamic discovery of microservices for scalable deployment (Eureka)
 - **API Gateway:** Centralized routing and request handling, including authentication, rate limiting, and load balancing (Feign)
 - **Testing:** Unit, Integration, and End-to-End (E2E) tests  
@@ -62,11 +62,22 @@ docker-compose up
 
 ---
 
+### License
+
+This project uses the following open-source libraries:
+
+- **Frontend**: Vue.js
+- **Api-Gateway/Backend Services**: Spring Boot, Apache, Eureka / Apache License 2.0 (Spring Boot): <https://www.apache.org/licenses/LICENSE-2.0>
+- **Testing**: RestAssured License: <https://github.com/rest-assured/rest-assured/blob/master/LICENSE>
+- **DB**: PostgreSQL R2DBC
+- **Logging**: Slf4j, Logback
+
 ### Future Work / Improvements
 
 While this project includes all the core features I initially set out to build, there’s always room for enhancement.
 The following improvements are planned for a future iteration:
 
-- 9/25 Began hardening application by following OWASP documentation and what I have been learning from OWASP site and Tanya Janca's Books (Alice and Bob Learn Application Security/Secure Coding)
 - Implement Server-Sent Events (SSE) to stream the 10 most recent URLs from Redis, replacing the current REST-based approach
 - Improve the frontend UI/UX (though this was not the primary focus of the project)
+
+- 9/25 Began hardening application by following OWASP documentation and what I have been learning from OWASP site and Tanya Janca's Books (Alice and Bob Learn Application Security/Secure Coding)

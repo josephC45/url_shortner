@@ -1,6 +1,6 @@
 # URL-Kafka-Consumer
 
-The URL-Kafka_Consumer is an internal service that consumes the URLs pushed to Kafka by Debezium (CDC) upon Short URL creation.
+Internal service that consumes the URLs pushed to Kafka by Debezium (CDC) upon Short URL creation.
 
 ---
 
@@ -23,8 +23,18 @@ The URL-Kafka_Consumer is an internal service that consumes the URLs pushed to K
 
 ---
 
+### Configuration
+
+- env, application.yaml and docker-compose files
+
 ### Prerequisites
 
 - Debezium (CDC)
 - Redis
 - Docker
+
+### Local Development
+
+- Done primarily by spinning up docker container via docker-compose file / docker desktop
+
+---
